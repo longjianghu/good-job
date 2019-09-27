@@ -1,14 +1,12 @@
 <p align="center">
-    <a href="https://github.com/longjianghu/good-job" target="_blank">
+    <a href="https://github.com/longjianghu/good-job.git" target="_blank">
         <img src="https://raw.githubusercontent.com/longjianghu/good-job/master/logo.png" alt="GoodJob">
     </a>
 </p>
 
 > ** 一款简易的任务管理系统 **
 
-系统通过调用接口方式执行任务(解耦)，以及任务重试，调用方需要通过接口方式实现自已的业务逻辑。
-
-系统预警目前只能通过邮件和手机短信(需要自行实现)的方式进行通知。
+系统通过调用接口方式执行任务(解耦)和任务重试，调用方需要通过接口方式实现自已的业务逻辑。系统预警目前只能通过邮件和手机短信(需要自行实现)的方式进行通知。
 
 ## 运行环境
 
@@ -23,7 +21,7 @@
 ### 拉取代码
 
 ```bash
-git pull https://gitee.com/longjianghu/good-job.git
+git pull https://github.com/longjianghu/good-job.git
 ```
 
 ### 更改配置
