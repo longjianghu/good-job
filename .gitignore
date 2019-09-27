@@ -1,0 +1,7 @@
+/runtime
+/vendor
+.idea
+.docker-sync
+composer.lock
+.env
+.phpstorm.meta.php
