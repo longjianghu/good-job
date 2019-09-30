@@ -130,7 +130,7 @@ class ApiMiddleware implements MiddlewareInterface
             $result = $this->_taskData->getApplicationInfo($appKey);
 
             if (ArrayHelper::getValue($result, 'code') != 200) {
-                throw new \Exception('APP KEY不存在');
+                throw new \Exception(ArrayHelper::getValue($result, 'message'));
             }
 
             $secretKey = ArrayHelper::getValue($result, 'data.secret_key');
