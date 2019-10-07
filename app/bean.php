@@ -51,24 +51,24 @@ return [
     ],
     'migrationManager'   => ['migrationPath' => '@app/Migration'],
     'lineFormatter'      => [
-        'format'     => '%datetime% [%level_name%] [%channel%] [%event%] %messages%',
+        'format'     => '%datetime% [%level_name%] [%channel%] [%event%] [tid:%tid%] [cid:%cid%] [traceid:%traceid%] [spanid:%spanid%] [parentid:%parentid%] %messages%',
         'dateFormat' => 'Y-m-d H:i:s',
     ],
     'noticeHandler'      => [
         'class'     => FileHandler::class,
-        'logFile'   => '@runtime/logs/notice.log',
+        'logFile'   => '@runtime/logs/notice-%d{Y-m-d}.log',
         'formatter' => \bean('lineFormatter'),
         'levels'    => 'notice,debug,trace',
     ],
     'applicationHandler' => [
         'class'     => FileHandler::class,
-        'logFile'   => '@runtime/logs/error.log',
+        'logFile'   => '@runtime/logs/error-%d{Y-m-d}.log',
         'formatter' => \bean('lineFormatter'),
         'levels'    => 'error,warning',
     ],
     'infoHandler'        => [
         'class'     => FileHandler::class,
-        'logFile'   => '@runtime/logs/info.log',
+        'logFile'   => '@runtime/logs/info-%d{Y-m-d}.log',
         'formatter' => \bean('lineFormatter'),
         'levels'    => 'info',
     ],

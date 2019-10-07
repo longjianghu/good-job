@@ -10,7 +10,7 @@
 
 ## 运行环境
 
-系统其于 <a href="http://www.swoft.org" target="_blank" title="Swoft官网">Swoft2.0</a> 开发,数据库采用 MySQL, 消息队列使用 Redis。建议使用<a href="https://www.docker.com/" target="_blank" title="Docker官网">Docker</a> 进行项目部署。
+系统其于 <a href="http://www.swoft.org" target="_blank" title="Swoft官网">Swoft2.0.6</a> 开发,数据库采用 MySQL, 消息队列使用 Redis。建议使用<a href="https://www.docker.com/" target="_blank" title="Docker官网">Docker</a> 进行项目部署。
 
 ## 如何使用
 
