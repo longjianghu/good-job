@@ -78,22 +78,6 @@
     "message": ""
 }
         </pre>
-        <p>服务器接收数据格式如下：</p>
-        <pre>
-{
-    "header": {
-        "app-key": "5288167568172728",
-        "timestamp": "2019-09-22 11:41:20",
-        "signature": "315d716baf9eb6ff86dddb516a75a3be",
-        "nonce-str": "WmgR2nwCHk",
-        "version": "1.0"
-    },
-    "POST": {
-        "data": "提交的数据"
-    }
-}
-        </pre>
-    </table>
 </section>
 <section class="content">
     <h3>投递任务</h3>
@@ -136,6 +120,21 @@
         </tbody>
     </table>
     <h4>返回示例</h4>
+    <p>提交示例：</p>
+    <pre>
+{
+    "header": {
+        "app-key": "5288167568172728",
+        "timestamp": "2019-09-22 11:41:20",
+        "signature": "315d716baf9eb6ff86dddb516a75a3be",
+        "nonce-str": "WmgR2nwCHk",
+        "version": "1.0"
+    },
+    "POST": {
+        "data": "提交的数据"
+    }
+}
+        </pre>
     <p>注意事项：你可以使用taskId查询任务执行结果。</p>
     <pre>
 {
@@ -146,7 +145,6 @@
     "message": ""
 }
         </pre>
-    </table>
     <h3>任务查询</h3>
     <p>接口 URI：/task/detail</p>
     <p>提交方法：POST</p>
@@ -221,7 +219,6 @@
     "message": ""
 }
         </pre>
-    </table>
 </section>
 <section class="content">
     <h3>取消任务</h3>
@@ -258,7 +255,6 @@
     "message": ""
 }
         </pre>
-    </table>
     <h3>任务详情</h3>
     <p>接口 URI：/task/detail</p>
     <p>提交方法：POST</p>
@@ -316,7 +312,6 @@
     "message": ""
 }
         </pre>
-    </table>
 </section>
 <section class="content">
     <h3>接口鉴权</h3>
@@ -383,7 +378,7 @@ Array
 )
 </pre>
     <p>提交的内容加上头部信息的参数(signature除外)按键名从a->z进行排序并组装成一个字符串。<?php echo htmlspecialchars('app-key=4098668690234486&content=aabb&nonce-str=abc123&runtime=2019-09-13
-        11:08:00&taskNo=a1&timestamp=2019-09-13 10:13:00&version=1.0');?></p>
+        11:08:00&taskNo=a1&timestamp=2019-09-13 10:13:00&version=1.0'); ?></p>
     <p>使用md5(md5(待加密字符串).分配密钥)进行加密即可得到签名字符串:1dcfd23cc2f9a42ce5c9437aa21e7d1c。</p>
 </section>
 </body>
