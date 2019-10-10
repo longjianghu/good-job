@@ -11,7 +11,7 @@
  Target Server Version : 80017
  File Encoding         : 65001
 
- Date: 10/10/2019 22:16:45
+ Date: 10/10/2019 22:35:10
 */
 
 SET NAMES utf8mb4;
@@ -66,27 +66,6 @@ CREATE TABLE `logs`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `task_id`(`task_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '系统日志' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for migration
--- ----------------------------
-DROP TABLE IF EXISTS `migration`;
-CREATE TABLE `migration`  (
-  `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  `time` bigint(20) NOT NULL,
-  `is_rollback` tinyint(4) NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of migration
--- ----------------------------
-INSERT INTO `migration` VALUES (1, 'App\\Migration\\Abort', 20190901204056, 2);
-INSERT INTO `migration` VALUES (2, 'App\\Migration\\Application', 20190901204056, 2);
-INSERT INTO `migration` VALUES (3, 'App\\Migration\\Logs', 20190901204056, 2);
-INSERT INTO `migration` VALUES (4, 'App\\Migration\\Notify', 20190901204056, 2);
-INSERT INTO `migration` VALUES (5, 'App\\Migration\\Task', 20190901204056, 2);
 
 -- ----------------------------
 -- Table structure for notify
