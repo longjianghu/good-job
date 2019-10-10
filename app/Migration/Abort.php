@@ -25,7 +25,7 @@ class Abort extends BaseMigration
             $blueprint->increments('id')->comment('自增ID');
             $blueprint->unsignedTinyInteger('is_deleted', false)->default(0)->comment('是否删除');
             $blueprint->char('task_id', 32)->default('')->comment('任务ID');
-            $blueprint->unsignedInteger('status', false)->default(0)->comment('拦截状态 0:未知 1:拦截成功');
+            $blueprint->unsignedTinyInteger('status', false)->default(0)->comment('拦截状态 0:未知 1:拦截成功');
             $blueprint->unsignedInteger('created_at', false)->default(0)->comment('创建时间');
             $blueprint->unsignedInteger('updated_at', false)->default(0)->comment('更新时间');
             $blueprint->index('task_id', 'task_id');

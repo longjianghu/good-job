@@ -53,10 +53,19 @@ composer install
 php ./bin/swoft migrate:up -y
 ```
 
+除了使用上面的命令之外你也可以直接导入目录下的SQL文件创建相关数据表。
+
+
 ### 运行容器(可选)
 
 ```bash
 docker run --name good-job -p 8081:18306 -v /data/var/www/good-job:/data -d longjianghu/php-alpine:1.0 php /data/bin/swoft http:start
+```
+
+### 启动任务进程
+
+```bash
+docker exec -it good-job php /data/bin/swoft process:start -d
 ```
 
 ### 应用接入
