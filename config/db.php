@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 return [
+    'charset' => env('DB_CHARSET'),
     'config'  => [
         'collation' => env('DB_COLLATION'),
         'strict'    => false,
