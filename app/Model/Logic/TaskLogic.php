@@ -98,10 +98,10 @@ class TaskLogic
 
                 // 发送请求
                 $query = send($linkUrl, $data, $header);
-                $data  = ArrayHelper::getValue($query, 'data');
+                $data  = (ArrayHelper::getValue($query, 'code') == 200) ? ArrayHelper::getValue($query, 'data') : 'APP接口异常,数据请求失败！';
 
                 if (strtolower($data) != 'sucess') {
-                    $logs['remark'] = json_encode($data);
+                    $logs['remark'] = ( ! is_string($data)) ? $data : json_encode($data);
 
                     $retryNum = config('app.retryNum');
 
