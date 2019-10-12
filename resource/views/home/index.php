@@ -120,21 +120,6 @@
         </tbody>
     </table>
     <h4>返回示例</h4>
-    <p>提交示例：</p>
-    <pre>
-{
-    "header": {
-        "app-key": "5288167568172728",
-        "timestamp": "2019-09-22 11:41:20",
-        "signature": "315d716baf9eb6ff86dddb516a75a3be",
-        "nonce-str": "WmgR2nwCHk",
-        "version": "1.0"
-    },
-    "POST": {
-        "data": "提交的数据"
-    }
-}
-        </pre>
     <p>注意事项：你可以使用taskId查询任务执行结果。</p>
     <pre>
 {
