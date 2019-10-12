@@ -63,8 +63,8 @@ class LogsData
 
             $data = [
                 'task_id'    => $taskId,
-                'retry'      => ArrayHelper::getValue($logs, 'retry', 0),
-                'remark'     => ArrayHelper::getValue($logs, 'remark', ''),
+                'retry'      => (int)ArrayHelper::getValue($logs, 'retry', 0),
+                'remark'     => (string)ArrayHelper::getValue($logs, 'remark'),
                 'created_at' => time(),
                 'updated_at' => 0
             ];

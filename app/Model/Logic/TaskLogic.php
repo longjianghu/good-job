@@ -100,8 +100,8 @@ class TaskLogic
                 $query = send($linkUrl, $data, $header);
                 $data  = ArrayHelper::getValue($query, 'data');
 
-                if ($data != 'sucess') {
-                    $logs['remark'] = $data;
+                if (strtolower($data) != 'sucess') {
+                    $logs['remark'] = json_encode($data);
 
                     $retryNum = config('app.retryNum');
 
