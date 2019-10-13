@@ -130,6 +130,8 @@
     "message": ""
 }
         </pre>
+</section>
+<section class="content">
     <h3>任务查询</h3>
     <p>接口 URI：/task/detail</p>
     <p>提交方法：POST</p>
@@ -240,6 +242,44 @@
     "message": ""
 }
         </pre>
+</section>
+<section class="content">
+    <h3>任务重试</h3>
+    <p>接口 URI：/task/retry</p>
+    <p>提交方法：POST</p>
+    <p>是否鉴权：是</p>
+    <h4>提交参数</h4>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th width="100px">参数</th>
+            <th width="50px">类型</th>
+            <th width="100px">是否必填</th>
+            <th>描述信息</th>
+            <th>示例值</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>taskId</td>
+            <td>string</td>
+            <td>是</td>
+            <td>任务ID</td>
+            <td>5126798034387479</td>
+        </tr>
+        </tbody>
+    </table>
+    <p>注意事项：系统不会检测任务的执行状态。</p>
+    <h4>返回示例</h4>
+    <pre>
+{
+    "code": 200,
+    "data": {},
+    "message": ""
+}
+        </pre>
+</section>
+<section class="content">
     <h3>任务详情</h3>
     <p>接口 URI：/task/detail</p>
     <p>提交方法：POST</p>

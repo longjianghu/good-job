@@ -264,22 +264,30 @@ class TaskData
      * 投递任务
      *
      * @access public
-     * @param array $application 应用信息
-     * @param array $post        POST数据
+     * @param string $appKey APP KEY
+     * @param array  $post   POST数据
      * @return array
      */
-    public function push(array $application, array $post)
+    public function push(string $appKey, array $post)
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
-            if (empty($application)) {
-                throw new \Exception('任务信息不能为空！');
+            if (empty($appKey)) {
+                throw new \Exception('APP KEY 不能为空！');
             }
 
             if (empty($post)) {
                 throw new \Exception('提交数据不能为空！');
             }
+
+            $application = $this->getApplicationInfo($appKey);
+
+            if (ArrayHelper::getValue($application, 'code') != 200) {
+                throw new \Exception(ArrayHelper::getValue($application, 'message'));
+            }
+
+            $application = ArrayHelper::getValue($application, 'data');
 
             $taskNo  = ArrayHelper::getValue($post, 'taskNo');
             $content = ArrayHelper::getValue($post, 'content');
@@ -349,6 +357,62 @@ class TaskData
             }
 
             $status = ['code' => 200, 'data' => ['taskId' => $taskId], 'message' => ''];
+        } catch (\Throwable $e) {
+            $status['message'] = $e->getMessage();
+        }
+
+        return $status;
+    }
+
+    /**
+     * 任务重试
+     *
+     * @access public
+     * @param string $appKey APP KEY
+     * @param string $taskId 任务ID
+     * @return array
+     */
+    public function retry(string $appKey, string $taskId)
+    {
+        $status = ['code' => 0, 'data' => [], 'message' => ''];
+
+        try {
+            if (empty($appKey)) {
+                throw new \Exception('APP KEY 不能为空！');
+            }
+
+            if (empty($taskId)) {
+                throw new \Exception('任务ID不能为空！');
+            }
+
+            $result = $this->_taskDao->findByTaskId($taskId);
+
+            if (empty($result)) {
+                throw new \Exception('任务ID输入有误！');
+            }
+
+            $application = $this->getApplicationInfo($appKey);
+
+            if (ArrayHelper::getValue($application, 'code') != 200) {
+                throw new \Exception(ArrayHelper::getValue($application, 'message'));
+            }
+
+            $application = ArrayHelper::getValue($application, 'data');
+
+            $data = [
+                'appKey'    => ArrayHelper::getValue($result, 'app_key'),
+                'secretKey' => ArrayHelper::getValue($application, 'secret_key'),
+                'taskNo'    => ArrayHelper::getValue($result, 'task_no'),
+                'linkUrl'   => ArrayHelper::getValue($application, 'link_url'),
+                'retry'     => 0,
+                'step'      => ArrayHelper::getValue($result, 'step'),
+                'content'   => ArrayHelper::getValue($result, 'content'),
+            ];
+
+            $this->_redis->hSetNx(config('queue.task'), $taskId, json_encode($data));
+            $this->_redis->lPush(config('queue.worker'), $taskId);
+
+            $status = ['code' => 200, 'data' => [], 'message' => ''];
         } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
         }

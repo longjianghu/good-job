@@ -138,15 +138,39 @@ class TaskController
         $status = ['code' => 500, 'data' => [], 'message' => ''];
 
         try {
-            $appKey      = $request->getHeaderLine('app-key');
-            $application = $this->_taskData->getApplicationInfo($appKey);
+            $appKey = $request->getHeaderLine('app-key');
+            $result = $this->_taskData->push($appKey, $request->post());
 
-            if (ArrayHelper::getValue($application, 'code') != 200) {
-                throw new \Exception(ArrayHelper::getValue($application, 'message'));
+            if (ArrayHelper::getValue($result, 'code') != 200) {
+                throw new \Exception(ArrayHelper::getValue($result, 'message'));
             }
 
-            $application = ArrayHelper::getValue($application, 'data');
-            $result      = $this->_taskData->push($application, $request->post());
+            $data   = ArrayHelper::getValue($result, 'data');
+            $status = ['code' => 200, 'data' => formatData($data), 'message' => ''];
+        } catch (\Throwable $e) {
+            $status['message'] = $e->getMessage();
+        }
+
+        return withJson($status);
+    }
+
+    /**
+     * 任务重试
+     *
+     * @RequestMapping("retry",method={RequestMethod::POST})
+     * @Validate(validator="OtherValidator")
+     * @Middleware(ApiMiddleware::class)
+     * @throws Throwable
+     */
+    public function retry(Request $request)
+    {
+        $status = ['code' => 500, 'data' => [], 'message' => ''];
+
+        try {
+            $appKey = $request->getHeaderLine('app-key');
+            $taskId = $request->post('taskId');
+
+            $result = $this->_taskData->retry($appKey, $taskId);
 
             if (ArrayHelper::getValue($result, 'code') != 200) {
                 throw new \Exception(ArrayHelper::getValue($result, 'message'));
