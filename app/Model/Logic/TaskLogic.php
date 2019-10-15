@@ -57,82 +57,84 @@ class TaskLogic
                 throw new \Exception('任务数据解析失败！');
             }
 
-            $appKey    = ArrayHelper::getValue($task, 'appKey');
-            $secretKey = ArrayHelper::getValue($task, 'secretKey');
-            $linkUrl   = ArrayHelper::getValue($task, 'linkUrl');
-            $step      = (int)ArrayHelper::getValue($task, 'step');
-            $content   = ArrayHelper::getValue($task, 'content');
+            sgo(function () use ($task, $taskId) {
+                $appKey    = ArrayHelper::getValue($task, 'appKey');
+                $secretKey = ArrayHelper::getValue($task, 'secretKey');
+                $linkUrl   = ArrayHelper::getValue($task, 'linkUrl');
+                $step      = (int)ArrayHelper::getValue($task, 'step');
+                $content   = ArrayHelper::getValue($task, 'content');
 
-            $retry = (int)ArrayHelper::getValue($task, 'retry');
-            $retry += 1;
+                $retry = (int)ArrayHelper::getValue($task, 'retry');
+                $retry += 1;
 
-            $logs  = ['taskId' => $taskId, 'retry' => $retry, 'remark' => '任务执行成功!', 'created_at' => time()];
-            $abort = $this->_redis->get($taskId);
+                $logs  = ['taskId' => $taskId, 'retry' => $retry, 'remark' => '任务执行成功!', 'created_at' => time()];
+                $abort = $this->_redis->get($taskId);
 
-            if ( ! empty($abort)) { // 系统拦截
-                $logs['remark'] = '系统拦截';
+                if ( ! empty($abort)) { // 系统拦截
+                    $logs['remark'] = '系统拦截';
 
-                $this->_abortDao->updateTaskStatus($taskId, 1);
-                $this->_redis->set($taskId, 1, 0);
-            } else { // 未被拦截
-                $header = [
-                    'app-key'   => $appKey,
-                    'timestamp' => date('Y-m-d H:i:s'),
-                    'nonce-str' => random(10),
-                    'signature' => '',
-                    'version'   => '1.0',
-                ];
+                    $this->_abortDao->updateTaskStatus($taskId, 1);
+                    $this->_redis->set($taskId, 1, 0);
+                } else { // 未被拦截
+                    $header = [
+                        'app-key'   => $appKey,
+                        'timestamp' => date('Y-m-d H:i:s'),
+                        'nonce-str' => random(10),
+                        'signature' => '',
+                        'version'   => '1.0',
+                    ];
 
-                $data = ['data' => $content];
+                    $data = ['data' => $content];
 
-                // 生成签名信息
-                $signature = array_merge($header, $data);
-                $signature = array_filter($signature);
+                    // 生成签名信息
+                    $signature = array_merge($header, $data);
+                    $signature = array_filter($signature);
 
-                ksort($signature);
+                    ksort($signature);
 
-                $str = http_build_query($signature, '', '&');
-                $str = urldecode($str);
+                    $str = http_build_query($signature, '', '&');
+                    $str = urldecode($str);
 
-                $header['signature'] = md5(md5($str).ArrayHelper::getValue($task, 'secretKey'));
+                    $header['signature'] = md5(md5($str).ArrayHelper::getValue($task, 'secretKey'));
 
-                // 发送请求
-                $query = send($linkUrl, $data, $header);
-                $data  = (ArrayHelper::getValue($query, 'code') == 200) ? ArrayHelper::getValue($query, 'data') : 'APP接口异常,数据请求失败！';
+                    // 发送请求
+                    $query = send($linkUrl, $data, $header);
+                    $data  = (ArrayHelper::getValue($query, 'code') == 200) ? ArrayHelper::getValue($query, 'data') : 'APP接口异常,数据请求失败！';
 
-                if (strtolower($data) != 'sucess') {
-                    $logs['remark'] = (is_string($data)) ? $data : json_encode($data);
+                    if (strtolower($data) != 'sucess') {
+                        $logs['remark'] = (is_string($data)) ? $data : json_encode($data);
 
-                    $retryNum = config('app.retryNum');
+                        $retryNum = config('app.retryNum');
 
-                    if ($retry < $retryNum) {
-                        $data = [
-                            'appKey'    => $appKey,
-                            'secretKey' => $secretKey,
-                            'taskNo'    => ArrayHelper::getValue($task, 'taskNo'),
-                            'linkUrl'   => $linkUrl,
-                            'retry'     => $retry,
-                            'step'      => $step,
-                            'content'   => $content,
-                        ];
+                        if ($retry < $retryNum) {
+                            $data = [
+                                'appKey'    => $appKey,
+                                'secretKey' => $secretKey,
+                                'taskNo'    => ArrayHelper::getValue($task, 'taskNo'),
+                                'linkUrl'   => $linkUrl,
+                                'retry'     => $retry,
+                                'step'      => $step,
+                                'content'   => $content,
+                            ];
 
-                        // 更新任务信息
-                        $this->_redis->hSet(config('queue.task'), $taskId, json_encode($data));
+                            // 更新任务信息
+                            $this->_redis->hSet(config('queue.task'), $taskId, json_encode($data));
 
-                        // 提交到重试队列
-                        $step *= $retry;
-                        $this->_redis->zAdd(config('queue.retry'), [$taskId => time() + $step]);
+                            // 提交到重试队列
+                            $step *= $retry;
+                            $this->_redis->zAdd(config('queue.retry'), [$taskId => time() + $step]);
+                        } else {
+                            // 重试次数为0时提交预警信息
+                            $this->_redis->lPush(config('queue.notify'), $taskId);
+                        }
                     } else {
-                        // 重试次数为0时提交预警信息
-                        $this->_redis->lPush(config('queue.notify'), $taskId);
+                        // 任务执行成功删除任务
+                        $this->_redis->hDel(config('queue.task'), $taskId);
                     }
-                } else {
-                    // 任务执行成功删除任务
-                    $this->_redis->hDel(config('queue.task'), $taskId);
                 }
-            }
 
-            $this->_redis->lPush(config('queue.log'), json_encode($logs));
+                $this->_redis->lPush(config('queue.log'), json_encode($logs));
+            });
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
         } catch (\Throwable $e) {
