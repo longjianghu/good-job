@@ -1,16 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 
 use App\Process\NotifyProcess;
-use Swoft\Crontab\Process\CrontabProcess;
+
 use Swoft\Db\Pool;
-use Swoft\Http\Server\HttpServer;
-use Swoft\Log\Handler\FileHandler;
-use Swoft\Process\ProcessPool;
-use Swoft\Task\Swoole\TaskListener;
-use Swoft\Task\Swoole\FinishListener;
-use Swoft\Server\SwooleEvent;
 use Swoft\Db\Database;
 use Swoft\Redis\RedisDb;
+use Swoft\Server\SwooleEvent;
+use Swoft\Process\ProcessPool;
+use Swoft\Http\Server\HttpServer;
+use Swoft\Log\Handler\FileHandler;
+use Swoft\Task\Swoole\TaskListener;
+use Swoft\Task\Swoole\FinishListener;
+use Swoft\Crontab\Process\CrontabProcess;
 
 return [
     'logger'             => [
