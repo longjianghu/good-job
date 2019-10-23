@@ -311,25 +311,23 @@ class TaskData
             // 检测任务是否已经存在
             $count = $this->_taskDao->findByTaskId($taskId);
 
-            if ($count > 0) {
-                throw new \Exception('提交的任务已存在！');
-            }
+            if ($count == 0) {
+                $data = [
+                    'task_id'    => $taskId,
+                    'app_key'    => $appKey,
+                    'task_no'    => $taskNo,
+                    'status'     => $runing,
+                    'step'       => ArrayHelper::getValue($application, 'step'),
+                    'runtime'    => $runtime,
+                    'content'    => $content,
+                    'created_at' => time(),
+                ];
 
-            $data = [
-                'task_id'    => $taskId,
-                'app_key'    => $appKey,
-                'task_no'    => $taskNo,
-                'status'     => $runing,
-                'step'       => ArrayHelper::getValue($application, 'step'),
-                'runtime'    => $runtime,
-                'content'    => $content,
-                'created_at' => time(),
-            ];
+                $query = $this->_taskDao->create($data);
 
-            $query = $this->_taskDao->create($data);
-
-            if (empty($query)) {
-                throw new \Exception('任务记录写入失败！');
+                if (empty($query)) {
+                    throw new \Exception('任务记录写入失败！');
+                }
             }
 
             $delay = $runtime - time();
