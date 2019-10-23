@@ -38,7 +38,7 @@ vi .env # 请根据实际情况进行调整
 ```bash
 docker pull longjianghu/swoft:1.1
 
-docker run --rm -it -v /data/var/www/good-job:/data  longjianghu/php-alpine:1.0 sh
+docker run --rm -it -v /data/var/www/good-job:/data longjianghu/swoft:1.1 sh
 ```
 
 ### Composer安装
