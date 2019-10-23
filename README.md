@@ -59,7 +59,7 @@ php ./bin/swoft migrate:up -y
 ### 运行容器(可选)
 
 ```bash
-docker run --name good-job -p 8081:18306 -v /data/var/www/good-job:/data -d longjianghu/php-alpine:1.0 php /data/bin/swoft http:start
+docker run --name good-job -p 8081:18306 -v /data/var/www/good-job:/data -d longjianghu/swoft:1.1 php /data/bin/swoft http:start
 ```
 
 ### 启动任务进程
