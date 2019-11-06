@@ -14,16 +14,6 @@ use Swoft\Task\Swoole\FinishListener;
 use Swoft\Crontab\Process\CrontabProcess;
 
 return [
-    'logger'             => [
-        'flushRequest' => false,
-        'enable'       => false,
-        'json'         => false,
-    ],
-    'i18n'               => [
-        'resoucePath'     => '@resource/language/',
-        'defaultLanguage' => 'zh',
-        'defualtCategory' => 'default',
-    ],
     'httpServer'         => [
         'class'    => HttpServer::class,
         'port'     => 18306,
@@ -37,9 +27,16 @@ return [
             SwooleEvent::FINISH => bean(FinishListener::class)
         ],
         'setting'  => [
+            'worker_num'            => env('WORKER_NUM', 3),
+            'dispatch_mode'         => 3,
             'task_worker_num'       => env('TASK_WORKER_NUM', 0),
             'task_enable_coroutine' => true
         ]
+    ],
+    'i18n'               => [
+        'resoucePath'     => '@resource/language/',
+        'defaultLanguage' => 'zh',
+        'defualtCategory' => 'default',
     ],
     'httpDispatcher'     => [
         'middlewares'      => [
