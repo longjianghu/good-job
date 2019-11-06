@@ -434,16 +434,19 @@ class TaskData
                 throw new \Exception('APP KEY不能为空！');
             }
 
-            $application = $this->_redis->get($appKey);
-            $application = ( ! empty($application)) ? $application : $this->_applicationDao->findByAppKey($appKey);
+            $data = $this->_redis->get($appKey);
 
-            if (empty($application)) {
-                throw new \Exception('没有找到相关记录！');
+            if (empty($data)) {
+                $data = $this->_applicationDao->findByAppKey($appKey);
+
+                if (empty($data)) {
+                    throw new \Exception('APP KEY 输入有误！');
+                }
+
+                $this->_redis->set($appKey, $data, 300);
             }
 
-            $this->_redis->set($appKey, $application, 300);
-
-            $status = ['code' => 200, 'data' => $application, 'message' => ''];
+            $status = ['code' => 200, 'data' => $data, 'message' => ''];
         } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
         }
