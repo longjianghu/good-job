@@ -77,10 +77,14 @@ class TaskData
 
                 $application = $this->getApplicationInfo($appKey);
 
+                if (ArrayHelper::getValue($application, 'code') != 200) {
+                    throw new \Exception(ArrayHelper::getValue($application, 'message'));
+                }
+
                 $task = [
                     'appKey'    => $appKey,
                     'secretKey' => ArrayHelper::getValue($application, 'data.secret_key'),
-                    'linkUrl'   => ArrayHelper::getValue($v, 'link_url'),
+                    'linkUrl'   => ArrayHelper::getValue($application, 'link_url'),
                     'retry'     => 0,
                     'step'      => ArrayHelper::getValue($v, 'step'),
                     'content'   => ArrayHelper::getValue($v, 'content'),
