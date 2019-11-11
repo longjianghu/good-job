@@ -81,6 +81,8 @@ class TaskData
                     throw new \Exception(ArrayHelper::getValue($application, 'message'));
                 }
 
+                $application = ArrayHelper::getValue($application, 'data');
+
                 $task = [
                     'appKey'    => $appKey,
                     'secretKey' => ArrayHelper::getValue($application, 'data.secret_key'),
