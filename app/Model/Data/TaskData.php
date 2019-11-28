@@ -449,7 +449,8 @@ class TaskData
                     throw new \Exception('APP KEY 输入有误！');
                 }
 
-                $this->_redis->set($appKey, json_encode($data), 300);
+                $data = json_encode($data);
+                $this->_redis->set($appKey, $data, 300);
             }
 
             $status = ['code' => 200, 'data' => json_decode($data, true), 'message' => ''];
