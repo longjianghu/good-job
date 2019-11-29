@@ -137,13 +137,13 @@ class ApiMiddleware implements MiddlewareInterface
 
             ksort($data);
 
-            $signature = [];
+            $temp = [];
 
             foreach ($data as $k => $v) {
-                $signature[] = sprintf('%s=%s', $k, $v);
+                $temp[] = sprintf('%s=%s', $k, $v);
             }
 
-            $str = implode('&', $signature);
+            $str = implode('&', $temp);
             $str = md5(md5($str).$secretKey);
 
             if ($str != $signature && APP_DEBUG == 0) {
