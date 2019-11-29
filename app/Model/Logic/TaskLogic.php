@@ -87,13 +87,18 @@ class TaskLogic
                     $data = ['data' => $content];
 
                     // 生成签名信息
-                    $signature = array_merge($header, $data);
-                    $signature = array_filter($signature);
+                    $temp = array_merge($header, $data);
+                    $temp = array_filter($temp);
 
-                    ksort($signature);
+                    ksort($temp);
 
-                    $str = http_build_query($signature, '', '&');
-                    $str = urldecode($str);
+                    $signature = [];
+
+                    foreach ($temp as $k => $v) {
+                        $signature[] = sprintf('%s=%s', $k, $v);
+                    }
+
+                    $str = implode('&', $signature);
 
                     $header['signature'] = md5(md5($str).ArrayHelper::getValue($task, 'secretKey'));
 

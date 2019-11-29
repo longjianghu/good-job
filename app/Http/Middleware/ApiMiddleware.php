@@ -137,8 +137,13 @@ class ApiMiddleware implements MiddlewareInterface
 
             ksort($data);
 
-            $str = http_build_query($data, '', '&');
-            $str = urldecode($str);
+            $signature = [];
+
+            foreach ($data as $k => $v) {
+                $signature[] = sprintf('%s=%s', $k, $v);
+            }
+
+            $str = implode('&', $signature);
             $str = md5(md5($str).$secretKey);
 
             if ($str != $signature && APP_DEBUG == 0) {
