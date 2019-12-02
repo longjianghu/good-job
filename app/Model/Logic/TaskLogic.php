@@ -60,10 +60,11 @@ class TaskLogic
             sgo(function () use ($task, $taskId) {
                 $appKey    = ArrayHelper::getValue($task, 'appKey');
                 $secretKey = ArrayHelper::getValue($task, 'secretKey');
+                $taskNo    = ArrayHelper::getValue($task, 'taskNo');
                 $linkUrl   = ArrayHelper::getValue($task, 'linkUrl');
-                $step      = (int)ArrayHelper::getValue($task, 'step');
                 $content   = ArrayHelper::getValue($task, 'content');
 
+                $step  = (int)ArrayHelper::getValue($task, 'step');
                 $retry = (int)ArrayHelper::getValue($task, 'retry');
                 $retry += 1;
 
@@ -100,11 +101,11 @@ class TaskLogic
 
                     $str = implode('&', $signature);
 
-                    $header['signature'] = md5(md5($str).ArrayHelper::getValue($task, 'secretKey'));
+                    $header['signature'] = md5(md5($str).$secretKey);
 
                     // 发送请求
                     $query = send($linkUrl, $data, $header);
-                    $data  = (ArrayHelper::getValue($query, 'code') == 200) ? ArrayHelper::getValue($query, 'data') : 'APP接口异常,数据请求失败！';
+                    $data  = (ArrayHelper::getValue($query, 'code') == 200) ? ArrayHelper::getValue($query, 'data') : 'API接口异常,数据请求失败！';
 
                     if (strtolower($data) != 'sucess') {
                         $logs['remark'] = (is_string($data)) ? $data : json_encode($data);
@@ -115,7 +116,7 @@ class TaskLogic
                             $data = [
                                 'appKey'    => $appKey,
                                 'secretKey' => $secretKey,
-                                'taskNo'    => ArrayHelper::getValue($task, 'taskNo'),
+                                'taskNo'    => $taskNo,
                                 'linkUrl'   => $linkUrl,
                                 'retry'     => $retry,
                                 'step'      => $step,

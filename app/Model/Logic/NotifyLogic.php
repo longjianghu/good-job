@@ -70,6 +70,10 @@ class NotifyLogic
 
             $taskNo = ArrayHelper::getValue($taskInfo, 'taskNo');
 
+            if (empty($taskNo)) {
+                throw new \Exception('数据格式不正确！');
+            }
+
             $this->_redis->hDel($queueName, $taskId);
 
             // 邮件提醒
