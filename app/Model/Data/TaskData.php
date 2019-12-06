@@ -128,23 +128,23 @@ class TaskData
 
         try {
             if (empty($taskId)) {
-                throw new \Exception('任务ID不能为空！');
+                throw new \Exception('任务ID不能为空!');
             }
 
             $result = $this->_taskDao->findByTaskId($taskId);
 
             if (empty($result)) {
-                throw new \Exception('任务信息获取失败！');
+                throw new \Exception('任务信息获取失败!');
             }
 
             if (ArrayHelper::getValue($result, 'status') != 0) {
-                throw new \Exception('任务已执行拦截失败！');
+                throw new \Exception('任务已执行拦截失败!');
             }
 
             $exists = $this->_redis->get($taskId);
 
             if ( ! empty($exists)) {
-                throw new \Exception('请勿重复提交！');
+                throw new \Exception('请勿重复提交!');
             }
 
             $state   = 0;
@@ -155,7 +155,7 @@ class TaskData
                 $query = $this->_taskDao->updateTaskStatus($taskId, 3);
 
                 if (empty($query)) {
-                    throw new \Exception('任务取消失败！');
+                    throw new \Exception('任务取消失败!');
                 }
             } else {
                 $this->_redis->set($taskId, 1, 3600);
@@ -171,7 +171,7 @@ class TaskData
             $query = $this->_abortDao->create($data);
 
             if (empty($query)) {
-                throw new \Exception('拦截任务添加失败！');
+                throw new \Exception('拦截任务添加失败!');
             }
 
             DB::connection(self::POOL)->commit();
@@ -199,7 +199,7 @@ class TaskData
 
         try {
             if (empty($post)) {
-                throw new \Exception('提交数据不能为空！');
+                throw new \Exception('提交数据不能为空!');
             }
 
             $appKey    = random(16, true);
@@ -219,7 +219,7 @@ class TaskData
             $query = $this->_applicationDao->create($data);
 
             if (empty($query)) {
-                throw new \Exception('任务添加失败！');
+                throw new \Exception('任务添加失败!');
             }
 
             $status = [
@@ -247,13 +247,13 @@ class TaskData
 
         try {
             if (empty($taskId)) {
-                throw new \Exception('任务ID不能为空！');
+                throw new \Exception('任务ID不能为空!');
             }
 
             $data = $this->_taskDao->findByTaskId($taskId);
 
             if (empty($data)) {
-                throw new \Exception('没有找到相任务记录！');
+                throw new \Exception('没有找到相任务记录!');
             }
 
             $data['logs'] = $this->_logsDao->findAllByTaskId($taskId);
@@ -280,11 +280,11 @@ class TaskData
 
         try {
             if (empty($appKey)) {
-                throw new \Exception('APP KEY 不能为空！');
+                throw new \Exception('APP KEY 不能为空!');
             }
 
             if (empty($post)) {
-                throw new \Exception('提交数据不能为空！');
+                throw new \Exception('提交数据不能为空!');
             }
 
             $application = $this->getApplicationInfo($appKey);
@@ -303,15 +303,15 @@ class TaskData
             $content = ArrayHelper::getValue($post, 'content');
 
             if (empty($taskNo)) {
-                throw new \Exception('任务编号不能为空！');
+                throw new \Exception('任务编号不能为空!');
             }
 
             if (empty($runtime)) {
-                throw new \Exception('日期格式输入有误！');
+                throw new \Exception('日期格式输入有误!');
             }
 
             if (empty($content)) {
-                throw new \Exception('任务内容不能为空！');
+                throw new \Exception('任务内容不能为空!');
             }
 
             $appKey = ArrayHelper::getValue($application, 'app_key');
@@ -322,35 +322,25 @@ class TaskData
             // 检测任务是否已经存在
             $task = $this->_taskDao->findByTaskId($taskId);
 
-            if (empty($task)) {
-                $data = [
-                    'task_id'    => $taskId,
-                    'app_key'    => $appKey,
-                    'task_no'    => $taskNo,
-                    'status'     => $runing,
-                    'step'       => ArrayHelper::getValue($application, 'step'),
-                    'runtime'    => $runtime,
-                    'content'    => $content,
-                    'created_at' => time(),
-                ];
+            if ( ! empty($task)) {
+                throw new \Exception('请勿重复投递相同的任务!');
+            }
 
-                $query = $this->_taskDao->create($data);
+            $data = [
+                'task_id'    => $taskId,
+                'app_key'    => $appKey,
+                'task_no'    => $taskNo,
+                'status'     => $runing,
+                'step'       => ArrayHelper::getValue($application, 'step'),
+                'runtime'    => $runtime,
+                'content'    => $content,
+                'created_at' => time(),
+            ];
 
-                if (empty($query)) {
-                    throw new \Exception('任务记录写入失败！');
-                }
-            } else {
-                $data = [
-                    'runtime'    => $runtime,
-                    'content'    => $content,
-                    'updated_at' => time(),
-                ];
+            $query = $this->_taskDao->create($data);
 
-                $query = $this->_taskDao->updateByTaskId($taskId, $data);
-
-                if (empty($query)) {
-                    throw new \Exception('任务记录更新失败！');
-                }
+            if (empty($query)) {
+                throw new \Exception('任务记录写入失败!');
             }
 
             $delay = $runtime - time();
@@ -399,17 +389,17 @@ class TaskData
 
         try {
             if (empty($appKey)) {
-                throw new \Exception('APP KEY 不能为空！');
+                throw new \Exception('APP KEY 不能为空!');
             }
 
             if (empty($taskId)) {
-                throw new \Exception('任务ID不能为空！');
+                throw new \Exception('任务ID不能为空!');
             }
 
             $result = $this->_taskDao->findByTaskId($taskId);
 
             if (empty($result)) {
-                throw new \Exception('任务ID输入有误！');
+                throw new \Exception('任务ID输入有误!');
             }
 
             $application = $this->getApplicationInfo($appKey);
@@ -454,7 +444,7 @@ class TaskData
 
         try {
             if (empty($appKey)) {
-                throw new \Exception('APP KEY不能为空！');
+                throw new \Exception('APP KEY不能为空!');
             }
 
             $data = $this->_redis->get($appKey);
@@ -463,7 +453,7 @@ class TaskData
                 $data = $this->_applicationDao->findByAppKey($appKey);
 
                 if (empty($data)) {
-                    throw new \Exception('APP KEY 输入有误！');
+                    throw new \Exception('APP KEY 输入有误!');
                 }
 
                 $data = json_encode($data);

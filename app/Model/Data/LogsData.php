@@ -50,14 +50,14 @@ class LogsData
             $logs = $this->_redis->lPop(config('queue.log'));
 
             if (empty($logs)) {
-                throw new \Exception('日志数据不能为空！');
+                throw new \Exception('日志数据不能为空!');
             }
 
             sgo(function () use ($logs) {
                 $logs = json_decode($logs, true);
 
                 if (json_last_error() != JSON_ERROR_NONE) {
-                    throw new \Exception('数据解析失败！');
+                    throw new \Exception('数据解析失败!');
                 }
 
                 $taskId = ArrayHelper::getValue($logs, 'taskId');
@@ -73,13 +73,13 @@ class LogsData
                 $query = $this->_logsDao->create($data);
 
                 if (empty($query)) {
-                    throw new \Exception('日志添加失败！');
+                    throw new \Exception('日志添加失败!');
                 }
 
                 $query = $this->_taskDao->updateTaskStatus($taskId, 2);
 
                 if (empty($query)) {
-                    throw new \Exception('任务状态更新失败！');
+                    throw new \Exception('任务状态更新失败!');
                 }
             });
 

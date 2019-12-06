@@ -42,19 +42,19 @@ class TaskLogic
             $taskId = $this->_redis->lPop(config('queue.worker'));
 
             if (empty($taskId)) {
-                throw new \Exception('没有需要执行的任务！');
+                throw new \Exception('没有需要执行的任务!');
             }
 
             $task = $this->_redis->hGet(config('queue.task'), $taskId);
 
             if (empty($task)) {
-                throw new \Exception('任务信息获取失败！');
+                throw new \Exception('任务信息获取失败!');
             }
 
             $task = json_decode($task, true);
 
             if (json_last_error() != JSON_ERROR_NONE) {
-                throw new \Exception('任务数据解析失败！');
+                throw new \Exception('任务数据解析失败!');
             }
 
             sgo(function () use ($task, $taskId) {
@@ -105,7 +105,7 @@ class TaskLogic
 
                     // 发送请求
                     $query = send($linkUrl, $data, $header);
-                    $data  = (ArrayHelper::getValue($query, 'code') == 200) ? ArrayHelper::getValue($query, 'data') : 'API接口异常,数据请求失败！';
+                    $data  = (ArrayHelper::getValue($query, 'code') == 200) ? ArrayHelper::getValue($query, 'data') : 'API接口异常,数据请求失败!';
 
                     if (strtolower($data) != 'sucess') {
                         $logs['remark'] = (is_string($data)) ? $data : json_encode($data);
@@ -163,7 +163,7 @@ class TaskLogic
 
         try {
             if (empty($queueName)) {
-                throw new \Exception('任务队列名称不能为空！');
+                throw new \Exception('任务队列名称不能为空!');
             }
 
             $min = (string)0;
@@ -172,7 +172,7 @@ class TaskLogic
             $taskIds = $this->_redis->zRangeByScore($queueName, $min, $max);
 
             if (empty($taskIds)) {
-                throw new \Exception('没有待执行的任务！');
+                throw new \Exception('没有待执行的任务!');
             }
 
             $this->_redis->zRemRangeByScore($queueName, $min, $max);

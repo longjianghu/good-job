@@ -52,26 +52,26 @@ class NotifyLogic
             $taskId = $this->_redis->lPop(config('queue.notify'));
 
             if (empty($taskId)) {
-                throw new \Exception('没有需要提醒的记录！');
+                throw new \Exception('没有需要提醒的记录!');
             }
 
             $queueName = config('queue.task');
             $taskInfo  = $this->_redis->hGet($queueName, $taskId);
 
             if (empty($taskInfo)) {
-                throw new \Exception('任务信息获取失败！');
+                throw new \Exception('任务信息获取失败!');
             }
 
             $taskInfo = json_decode($taskInfo, true);
 
             if (json_last_error() != JSON_ERROR_NONE) {
-                throw new \Exception('任务数据解析失败！');
+                throw new \Exception('任务数据解析失败!');
             }
 
             $taskNo = ArrayHelper::getValue($taskInfo, 'taskNo');
 
             if (empty($taskNo)) {
-                throw new \Exception('数据格式不正确！');
+                throw new \Exception('数据格式不正确!');
             }
 
             $this->_redis->hDel($queueName, $taskId);
@@ -83,7 +83,7 @@ class NotifyLogic
             if ( ! empty($email)) {
                 $logs = $this->_logsDao->findByTaskId($taskId);
 
-                $subject = sprintf('GoodJob提醒你:%s任务执行失败！', $taskNo);
+                $subject = sprintf('GoodJob提醒你:%s任务执行失败!', $taskNo);
                 $content = sprintf('<p>执行时间:%s</p><p>提示信息：%s</p>', date('Y-m-d H:i:s', ArrayHelper::getValue($logs, 'created_at')), ArrayHelper::getValue($logs, 'remark'));
 
                 sgo(function () use ($email, $subject, $content) {
@@ -96,7 +96,7 @@ class NotifyLogic
             $mobile = explode(',', $mobile);
 
             if ( ! empty($mobile)) {
-                $message = sprintf('GoodJob提醒你 %s 执行失败！', ArrayHelper::getValue($taskInfo, 'task_no'));
+                $message = sprintf('GoodJob提醒你 %s 执行失败!', ArrayHelper::getValue($taskInfo, 'task_no'));
 
                 sgo(function () use ($mobile, $message) {
                     $this->_sendSms($mobile, $message);
@@ -196,11 +196,11 @@ class NotifyLogic
 
         try {
             if (empty($reciver)) {
-                throw new \Exception('收件人不能为空！');
+                throw new \Exception('收件人不能为空!');
             }
 
             if (empty($taskId)) {
-                throw new \Exception('任务ID不能为空！');
+                throw new \Exception('任务ID不能为空!');
             }
 
             $data = [];
@@ -218,7 +218,7 @@ class NotifyLogic
             $query = $this->_notifyDao->create($data);
 
             if (empty($query)) {
-                throw new \Exception('提醒日志写入失败！');
+                throw new \Exception('提醒日志写入失败!');
             }
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
