@@ -320,9 +320,9 @@ class TaskData
             $runing = ($runtime <= time()) ? 1 : 0;
 
             // 检测任务是否已经存在
-            $count = $this->_taskDao->findByTaskId($taskId);
+            $task = $this->_taskDao->findByTaskId($taskId);
 
-            if ($count == 0) {
+            if (empty($task)) {
                 $data = [
                     'task_id'    => $taskId,
                     'app_key'    => $appKey,
@@ -338,6 +338,18 @@ class TaskData
 
                 if (empty($query)) {
                     throw new \Exception('任务记录写入失败！');
+                }
+            } else {
+                $data = [
+                    'runtime'    => $runtime,
+                    'content'    => $content,
+                    'updated_at' => time(),
+                ];
+
+                $query = $this->_taskDao->updateByTaskId($taskId, $data);
+
+                if (empty($query)) {
+                    throw new \Exception('任务记录更新失败！');
                 }
             }
 
@@ -356,7 +368,7 @@ class TaskData
                     'content'   => $content,
                 ];
 
-                $this->_redis->hSetNx(config('queue.task'), $taskId, json_encode($data));
+                $this->_redis->hSet(config('queue.task'), $taskId, json_encode($data));
 
                 if ($delay > 0) { // 延迟任务
                     $this->_redis->zAdd(config('queue.delay'), [$taskId => $runtime]);

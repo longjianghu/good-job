@@ -58,6 +58,21 @@ class TaskDao
     }
 
     /**
+     * 更新任务信息
+     *
+     * @access public
+     * @param string $taskId 任务ID
+     * @param array  $data   更新数据
+     * @return mixed
+     */
+    public function updateByTaskId(string $taskId, array $data)
+    {
+        $where = ['task_id' => $taskId];
+
+        return Db::query(self::POOL)->from(self::TABLE)->where($where)->update($data);
+    }
+
+    /**
      * 更新任务状态
      *
      * @access public
