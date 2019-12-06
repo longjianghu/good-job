@@ -295,14 +295,19 @@ class TaskData
 
             $application = ArrayHelper::getValue($application, 'data');
 
-            $taskNo  = ArrayHelper::getValue($post, 'taskNo');
-            $content = ArrayHelper::getValue($post, 'content');
+            $taskNo = ArrayHelper::getValue($post, 'taskNo');
 
             $runtime = ArrayHelper::getValue($post, 'runtime');
             $runtime = ( ! empty($runtime)) ? strtotime($runtime) : time();
 
+            $content = ArrayHelper::getValue($post, 'content');
+
             if (empty($taskNo)) {
                 throw new \Exception('任务编号不能为空！');
+            }
+
+            if (empty($runtime)) {
+                throw new \Exception('日期格式输入有误！');
             }
 
             if (empty($content)) {
