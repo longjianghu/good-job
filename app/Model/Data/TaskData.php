@@ -322,25 +322,32 @@ class TaskData
             // 检测任务是否已经存在
             $task = $this->_taskDao->findByTaskId($taskId);
 
-            if ( ! empty($task)) {
-                throw new \Exception('请勿重复投递相同的任务!');
-            }
-
             $data = [
-                'task_id'    => $taskId,
-                'app_key'    => $appKey,
-                'task_no'    => $taskNo,
-                'status'     => $runing,
-                'step'       => ArrayHelper::getValue($application, 'step'),
-                'runtime'    => $runtime,
-                'content'    => $content,
-                'created_at' => time(),
+                'task_id' => $taskId,
+                'app_key' => $appKey,
+                'task_no' => $taskNo,
+                'status'  => $runing,
+                'step'    => ArrayHelper::getValue($application, 'step'),
+                'runtime' => $runtime,
+                'content' => $content,
             ];
 
-            $query = $this->_taskDao->create($data);
+            if (empty($task)) {
+                $data['created_at'] = time();
 
-            if (empty($query)) {
-                throw new \Exception('任务记录写入失败!');
+                $query = $this->_taskDao->create($data);
+
+                if (empty($query)) {
+                    throw new \Exception('任务记录写入失败!');
+                }
+            } else {
+                $data['updated_at'] = time();
+
+                $query = $this->_taskDao->updateByTaskId($taskId, $data);
+
+                if (empty($query)) {
+                    throw new \Exception('任务记录更新失败!');
+                }
             }
 
             $delay = $runtime - time();
@@ -357,6 +364,18 @@ class TaskData
                     'step'      => ArrayHelper::getValue($application, 'step'),
                     'content'   => $content,
                 ];
+
+                $exists = $this->_redis->hGet(config('queue.task'), $taskId);
+
+                if ( ! empty($exists)) {
+                    $exists = json_decode($exists, true);
+
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        throw new \Exception('数据解析异常！');
+                    }
+
+                    $data['retry'] = ArrayHelper::getValue($exists, 'retry');
+                }
 
                 $this->_redis->hSet(config('queue.task'), $taskId, json_encode($data));
 
