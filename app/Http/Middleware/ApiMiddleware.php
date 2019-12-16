@@ -126,14 +126,14 @@ class ApiMiddleware implements MiddlewareInterface
                 throw new \Exception('用户签名不能为空！');
             }
 
-            $appKey = ArrayHelper::getValue($data, 'app-key');
-            $result = $this->_taskData->getApplicationInfo($appKey);
+            $appKey      = ArrayHelper::getValue($data, 'app-key');
+            $application = $this->_taskData->getApplicationInfo($appKey);
 
-            if (ArrayHelper::getValue($result, 'code') != 200) {
-                throw new \Exception(ArrayHelper::getValue($result, 'message'));
+            if (ArrayHelper::getValue($application, 'code') != 200) {
+                throw new \Exception(ArrayHelper::getValue($application, 'message'));
             }
 
-            $secretKey = ArrayHelper::getValue($result, 'data.secret_key');
+            $secretKey = ArrayHelper::getValue($application, 'data.secret_key');
 
             ksort($data);
 

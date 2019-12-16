@@ -85,7 +85,7 @@ class TaskData
 
                 $task = [
                     'appKey'    => $appKey,
-                    'secretKey' => ArrayHelper::getValue($application, 'data.secret_key'),
+                    'secretKey' => ArrayHelper::getValue($application, 'secret_key'),
                     'linkUrl'   => ArrayHelper::getValue($application, 'link_url'),
                     'retry'     => 0,
                     'step'      => ArrayHelper::getValue($v, 'step'),
