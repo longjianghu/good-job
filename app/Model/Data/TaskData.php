@@ -89,9 +89,9 @@ class TaskData
                     'linkUrl'    => ArrayHelper::getValue($application, 'link_url'),
                     'mobile'     => ArrayHelper::getValue($application, 'mobile'),
                     'email'      => ArrayHelper::getValue($application, 'email'),
-                    'retryTotal' => ArrayHelper::getValue($application, 'retry_total', config('app.retryTotal')),
+                    'retryTotal' => (int)ArrayHelper::getValue($application, 'retry_total', config('app.retryTotal', 0)),
                     'retryNum'   => 0,
-                    'step'       => ArrayHelper::getValue($v, 'step'),
+                    'step'       => (int)ArrayHelper::getValue($v, 'step', 0),
                     'content'    => ArrayHelper::getValue($v, 'content'),
                 ];
 
@@ -209,14 +209,17 @@ class TaskData
             $secretKey = random(32);
 
             $data = [
-                'app_name'   => ArrayHelper::getValue($post, 'appName'),
-                'app_key'    => $appKey,
-                'secret_key' => $secretKey,
-                'step'       => ArrayHelper::getValue($post, 'step', 0),
-                'link_url'   => ArrayHelper::getValue($post, 'linkUrl'),
-                'remark'     => ArrayHelper::getValue($post, 'remark'),
-                'created_at' => time(),
-                'updated_at' => 0
+                'app_key'     => $appKey,
+                'app_name'    => ArrayHelper::getValue($post, 'appName'),
+                'secret_key'  => $secretKey,
+                'step'        => (int)ArrayHelper::getValue($post, 'step', 0),
+                'retry_total' => (int)ArrayHelper::getValue($post, 'retryTotal', config('app.retryTotal', 0)),
+                'mobile'      => ArrayHelper::getValue($post, 'mobile'),
+                'email'       => ArrayHelper::getValue($post, 'email'),
+                'link_url'    => ArrayHelper::getValue($post, 'linkUrl'),
+                'remark'      => ArrayHelper::getValue($post, 'remark'),
+                'created_at'  => time(),
+                'updated_at'  => 0
             ];
 
             $query = $this->_applicationDao->create($data);
@@ -365,7 +368,7 @@ class TaskData
                     'linkUrl'    => ArrayHelper::getValue($application, 'link_url'),
                     'mobile'     => ArrayHelper::getValue($application, 'mobile'),
                     'email'      => ArrayHelper::getValue($application, 'email'),
-                    'retryTotal' => ArrayHelper::getValue($application, 'retry_total', config('app.retryTotal')),
+                    'retryTotal' => ArrayHelper::getValue($application, 'retry_total', config('app.retryTotal', 0)),
                     'retryNum'   => 0,
                     'step'       => ArrayHelper::getValue($application, 'step'),
                     'content'    => $content,
@@ -442,7 +445,7 @@ class TaskData
                 'linkUrl'    => ArrayHelper::getValue($application, 'link_url'),
                 'mobile'     => ArrayHelper::getValue($application, 'mobile'),
                 'email'      => ArrayHelper::getValue($application, 'email'),
-                'retryTotal' => ArrayHelper::getValue($application, 'retry_total', config('app.retryTotal')),
+                'retryTotal' => ArrayHelper::getValue($application, 'retry_total', config('app.retryTotal', 0)),
                 'retryNum'   => 0,
                 'step'       => ArrayHelper::getValue($result, 'step'),
                 'content'    => ArrayHelper::getValue($result, 'content'),

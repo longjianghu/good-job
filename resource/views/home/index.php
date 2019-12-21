@@ -56,6 +56,27 @@
             <td>-</td>
         </tr>
         <tr>
+            <td>retryTotal</td>
+            <td>int</td>
+            <td>否</td>
+            <td>重试次数。最大值为10</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>mobile</td>
+            <td>string</td>
+            <td>否</td>
+            <td>任务失败提醒接收手机号码</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>email</td>
+            <td>string</td>
+            <td>否</td>
+            <td>任务失败提醒接收邮箱</td>
+            <td>-</td>
+        </tr>
+        <tr>
             <td>remark</td>
             <td>string</td>
             <td>否</td>
