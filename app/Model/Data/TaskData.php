@@ -83,16 +83,19 @@ class TaskData
 
                 $application = ArrayHelper::getValue($application, 'data');
 
-                $task = [
-                    'appKey'    => $appKey,
-                    'secretKey' => ArrayHelper::getValue($application, 'secret_key'),
-                    'linkUrl'   => ArrayHelper::getValue($application, 'link_url'),
-                    'retry'     => 0,
-                    'step'      => ArrayHelper::getValue($v, 'step'),
-                    'content'   => ArrayHelper::getValue($v, 'content'),
+                $data = [
+                    'appKey'     => $appKey,
+                    'secretKey'  => ArrayHelper::getValue($application, 'secret_key'),
+                    'linkUrl'    => ArrayHelper::getValue($application, 'link_url'),
+                    'mobile'     => ArrayHelper::getValue($application, 'mobile'),
+                    'email'      => ArrayHelper::getValue($application, 'email'),
+                    'retryTotal' => ArrayHelper::getValue($application, 'retry_total', config('app.retryTotal')),
+                    'retryNum'   => 0,
+                    'step'       => ArrayHelper::getValue($v, 'step'),
+                    'content'    => ArrayHelper::getValue($v, 'content'),
                 ];
 
-                $this->_redis->hSetNx(config('app.queue.task'), $taskId, json_encode($task));
+                $this->_redis->hSetNx(config('app.queue.task'), $taskId, json_encode($data));
                 $delay = $runtime - time();
 
                 if ($delay > 0) { // 延迟任务
@@ -356,13 +359,16 @@ class TaskData
             if ($delay <= 3600) {
                 // 把数据存放到 Redis
                 $data = [
-                    'appKey'    => $appKey,
-                    'secretKey' => ArrayHelper::getValue($application, 'secret_key'),
-                    'taskNo'    => $taskNo,
-                    'linkUrl'   => ArrayHelper::getValue($application, 'link_url'),
-                    'retry'     => 0,
-                    'step'      => ArrayHelper::getValue($application, 'step'),
-                    'content'   => $content,
+                    'appKey'     => $appKey,
+                    'secretKey'  => ArrayHelper::getValue($application, 'secret_key'),
+                    'taskNo'     => $taskNo,
+                    'linkUrl'    => ArrayHelper::getValue($application, 'link_url'),
+                    'mobile'     => ArrayHelper::getValue($application, 'mobile'),
+                    'email'      => ArrayHelper::getValue($application, 'email'),
+                    'retryTotal' => ArrayHelper::getValue($application, 'retry_total', config('app.retryTotal')),
+                    'retryNum'   => 0,
+                    'step'       => ArrayHelper::getValue($application, 'step'),
+                    'content'    => $content,
                 ];
 
                 $exists = $this->_redis->hGet(config('app.queue.task'), $taskId);
@@ -374,7 +380,7 @@ class TaskData
                         throw new \Exception('数据解析异常！');
                     }
 
-                    $data['retry'] = ArrayHelper::getValue($exists, 'retry');
+                    $data['retryNum'] = ArrayHelper::getValue($exists, 'retryNum');
                 }
 
                 $this->_redis->hSet(config('app.queue.task'), $taskId, json_encode($data));
@@ -430,13 +436,16 @@ class TaskData
             $application = ArrayHelper::getValue($application, 'data');
 
             $data = [
-                'appKey'    => ArrayHelper::getValue($result, 'app_key'),
-                'secretKey' => ArrayHelper::getValue($application, 'secret_key'),
-                'taskNo'    => ArrayHelper::getValue($result, 'task_no'),
-                'linkUrl'   => ArrayHelper::getValue($application, 'link_url'),
-                'retry'     => 0,
-                'step'      => ArrayHelper::getValue($result, 'step'),
-                'content'   => ArrayHelper::getValue($result, 'content'),
+                'appKey'     => ArrayHelper::getValue($result, 'app_key'),
+                'secretKey'  => ArrayHelper::getValue($application, 'secret_key'),
+                'taskNo'     => ArrayHelper::getValue($result, 'task_no'),
+                'linkUrl'    => ArrayHelper::getValue($application, 'link_url'),
+                'mobile'     => ArrayHelper::getValue($application, 'mobile'),
+                'email'      => ArrayHelper::getValue($application, 'email'),
+                'retryTotal' => ArrayHelper::getValue($application, 'retry_total', config('app.retryTotal')),
+                'retryNum'   => 0,
+                'step'       => ArrayHelper::getValue($result, 'step'),
+                'content'    => ArrayHelper::getValue($result, 'content'),
             ];
 
             $this->_redis->hSetNx(config('app.queue.task'), $taskId, json_encode($data));

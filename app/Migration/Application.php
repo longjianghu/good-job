@@ -28,6 +28,7 @@ class Application extends BaseMigration
             $blueprint->char('app_key', 16)->default('')->comment('APP KEY');
             $blueprint->char('secret_key', 32)->default('')->comment('SECRET KEY');
             $blueprint->unsignedTinyInteger('step', false, true)->default(0)->comment('重试间隔(秒)');
+            $blueprint->unsignedTinyInteger('retry_total', false, true)->default(0)->comment('重试次数');
             $blueprint->string('mobile', 20)->default('')->comment('手机号码');
             $blueprint->string('email', 100)->default('')->comment('Email');
             $blueprint->string('link_url', 200)->default('')->comment('接口地址');

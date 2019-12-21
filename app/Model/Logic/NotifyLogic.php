@@ -69,6 +69,8 @@ class NotifyLogic
             }
 
             $taskNo = ArrayHelper::getValue($taskInfo, 'taskNo');
+            $mobile = ArrayHelper::getValue($taskInfo, 'mobile');
+            $email  = ArrayHelper::getValue($taskInfo, 'email');
 
             if (empty($taskNo)) {
                 throw new \Exception('数据格式不正确!');
@@ -77,7 +79,7 @@ class NotifyLogic
             $this->_redis->hDel($queueName, $taskId);
 
             // 邮件提醒
-            $email = config('app.notify.email');
+            $email = ( ! empty($email)) ? $email : config('app.notify.email');
             $email = explode(',', $email);
 
             if ( ! empty($email)) {
@@ -92,11 +94,11 @@ class NotifyLogic
             }
 
             // 短信提醒
-            $mobile = config('app.notify.mobile');
+            $mobile = ( ! empty($mobile)) ? $mobile : config('app.notify.mobile');
             $mobile = explode(',', $mobile);
 
             if ( ! empty($mobile)) {
-                $message = sprintf('GoodJob提醒你 %s 执行失败!', ArrayHelper::getValue($taskInfo, 'task_no'));
+                $message = sprintf('GoodJob提醒你:%s任务执行失败!', $taskNo);
 
                 sgo(function () use ($mobile, $message) {
                     $this->_sendSms($mobile, $message);

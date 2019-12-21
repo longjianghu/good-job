@@ -64,11 +64,12 @@ class TaskLogic
                 $linkUrl   = ArrayHelper::getValue($task, 'linkUrl');
                 $content   = ArrayHelper::getValue($task, 'content');
 
-                $step  = (int)ArrayHelper::getValue($task, 'step');
-                $retry = (int)ArrayHelper::getValue($task, 'retry');
-                $retry += 1;
+                $step       = (int)ArrayHelper::getValue($task, 'step');
+                $retryNum   = (int)ArrayHelper::getValue($task, 'retryNum');
+                $retryTotal = (int)ArrayHelper::getValue($task, 'retryTotal');
+                $retryNum   += 1;
 
-                $logs  = ['taskId' => $taskId, 'retry' => $retry, 'remark' => '任务执行成功!', 'created_at' => time()];
+                $logs  = ['taskId' => $taskId, 'retry' => $retryNum, 'remark' => '任务执行成功!', 'created_at' => time()];
                 $abort = $this->_redis->get($taskId);
 
                 if ( ! empty($abort)) { // 系统拦截
@@ -110,15 +111,13 @@ class TaskLogic
                     if (strtolower($data) != 'sucess') {
                         $logs['remark'] = (is_string($data)) ? $data : json_encode($data);
 
-                        $retryNum = config('app.retryNum');
-
-                        if ($retry < $retryNum) {
+                        if ($retryNum < $retryTotal) {
                             $data = [
                                 'appKey'    => $appKey,
                                 'secretKey' => $secretKey,
                                 'taskNo'    => $taskNo,
                                 'linkUrl'   => $linkUrl,
-                                'retry'     => $retry,
+                                'retry'     => $retryNum,
                                 'step'      => $step,
                                 'content'   => $content,
                             ];
@@ -127,7 +126,7 @@ class TaskLogic
                             $this->_redis->hSet(config('app.queue.task'), $taskId, json_encode($data));
 
                             // 提交到重试队列
-                            $step *= $retry;
+                            $step *= $retryNum;
                             $this->_redis->zAdd(config('app.queue.retry'), [$taskId => time() + $step]);
                         } else {
                             // 重试次数为0时提交预警信息
