@@ -77,7 +77,7 @@ class NotifyLogic
             $this->_redis->hDel($queueName, $taskId);
 
             // 邮件提醒
-            $email = config('notify.user.email');
+            $email = config('app.notify.email');
             $email = explode(',', $email);
 
             if ( ! empty($email)) {
@@ -92,7 +92,7 @@ class NotifyLogic
             }
 
             // 短信提醒
-            $mobile = config('notify.user.mobile');
+            $mobile = config('app.notify.mobile');
             $mobile = explode(',', $mobile);
 
             if ( ! empty($mobile)) {
@@ -133,14 +133,14 @@ class NotifyLogic
 
         try {
             $mailer = new SmtpMailer([
-                                         'host'     => config('notify.smtp.host'),
-                                         'username' => config('notify.smtp.username'),
-                                         'password' => config('notify.smtp.password'),
+                                         'host'     => config('app.smtp.host'),
+                                         'username' => config('app.smtp.username'),
+                                         'password' => config('app.smtp.password'),
                                          'secure'   => 'ssl',
                                      ]);
 
             $mail = new Message();
-            $mail->setFrom(config('notify.smtp.username'), config('notify.smtp.fromName'));
+            $mail->setFrom(config('app.smtp.username'), config('app.smtp.fromName'));
 
             foreach ($email as $k => $v) {
                 $mail->addTo($v);
