@@ -37,8 +37,8 @@ class Crontab
      */
     public function watchTask()
     {
-        $this->_taskLogic->monitor(config('queue.delay'));
-        $this->_taskLogic->monitor(config('queue.retry'));
+        $this->_taskLogic->monitor(config('app.queue.delay'));
+        $this->_taskLogic->monitor(config('app.queue.retry'));
     }
 
     /**

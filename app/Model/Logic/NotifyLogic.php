@@ -49,13 +49,13 @@ class NotifyLogic
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
-            $taskId = $this->_redis->lPop(config('queue.notify'));
+            $taskId = $this->_redis->lPop(config('app.queue.notify'));
 
             if (empty($taskId)) {
                 throw new \Exception('没有需要提醒的记录!');
             }
 
-            $queueName = config('queue.task');
+            $queueName = config('app.queue.task');
             $taskInfo  = $this->_redis->hGet($queueName, $taskId);
 
             if (empty($taskInfo)) {

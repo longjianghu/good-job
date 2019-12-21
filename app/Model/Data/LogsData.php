@@ -47,7 +47,7 @@ class LogsData
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
-            $logs = $this->_redis->lPop(config('queue.log'));
+            $logs = $this->_redis->lPop(config('app.queue.log'));
 
             if (empty($logs)) {
                 throw new \Exception('日志数据不能为空!');

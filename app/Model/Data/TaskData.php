@@ -92,13 +92,13 @@ class TaskData
                     'content'   => ArrayHelper::getValue($v, 'content'),
                 ];
 
-                $this->_redis->hSetNx(config('queue.task'), $taskId, json_encode($task));
+                $this->_redis->hSetNx(config('app.queue.task'), $taskId, json_encode($task));
                 $delay = $runtime - time();
 
                 if ($delay > 0) { // 延迟任务
-                    $this->_redis->zAdd(config('queue.delay'), [$taskId => $runtime]);
+                    $this->_redis->zAdd(config('app.queue.delay'), [$taskId => $runtime]);
                 } else { // 立即执行
-                    $this->_redis->lPush(config('queue.worker'), $taskId);
+                    $this->_redis->lPush(config('app.queue.worker'), $taskId);
                 }
 
                 // 更新任务状态为处理中
@@ -365,7 +365,7 @@ class TaskData
                     'content'   => $content,
                 ];
 
-                $exists = $this->_redis->hGet(config('queue.task'), $taskId);
+                $exists = $this->_redis->hGet(config('app.queue.task'), $taskId);
 
                 if ( ! empty($exists)) {
                     $exists = json_decode($exists, true);
@@ -377,12 +377,12 @@ class TaskData
                     $data['retry'] = ArrayHelper::getValue($exists, 'retry');
                 }
 
-                $this->_redis->hSet(config('queue.task'), $taskId, json_encode($data));
+                $this->_redis->hSet(config('app.queue.task'), $taskId, json_encode($data));
 
                 if ($delay > 0) { // 延迟任务
-                    $this->_redis->zAdd(config('queue.delay'), [$taskId => $runtime]);
+                    $this->_redis->zAdd(config('app.queue.delay'), [$taskId => $runtime]);
                 } else { // 立即执行
-                    $this->_redis->lPush(config('queue.worker'), $taskId);
+                    $this->_redis->lPush(config('app.queue.worker'), $taskId);
                 }
             }
 
@@ -439,8 +439,8 @@ class TaskData
                 'content'   => ArrayHelper::getValue($result, 'content'),
             ];
 
-            $this->_redis->hSetNx(config('queue.task'), $taskId, json_encode($data));
-            $this->_redis->lPush(config('queue.worker'), $taskId);
+            $this->_redis->hSetNx(config('app.queue.task'), $taskId, json_encode($data));
+            $this->_redis->lPush(config('app.queue.worker'), $taskId);
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
         } catch (\Throwable $e) {

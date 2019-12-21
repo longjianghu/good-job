@@ -39,13 +39,13 @@ class TaskLogic
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
-            $taskId = $this->_redis->lPop(config('queue.worker'));
+            $taskId = $this->_redis->lPop(config('app.queue.worker'));
 
             if (empty($taskId)) {
                 throw new \Exception('没有需要执行的任务!');
             }
 
-            $task = $this->_redis->hGet(config('queue.task'), $taskId);
+            $task = $this->_redis->hGet(config('app.queue.task'), $taskId);
 
             if (empty($task)) {
                 throw new \Exception('任务信息获取失败!');
@@ -124,22 +124,22 @@ class TaskLogic
                             ];
 
                             // 更新任务信息
-                            $this->_redis->hSet(config('queue.task'), $taskId, json_encode($data));
+                            $this->_redis->hSet(config('app.queue.task'), $taskId, json_encode($data));
 
                             // 提交到重试队列
                             $step *= $retry;
-                            $this->_redis->zAdd(config('queue.retry'), [$taskId => time() + $step]);
+                            $this->_redis->zAdd(config('app.queue.retry'), [$taskId => time() + $step]);
                         } else {
                             // 重试次数为0时提交预警信息
-                            $this->_redis->lPush(config('queue.notify'), $taskId);
+                            $this->_redis->lPush(config('app.queue.notify'), $taskId);
                         }
                     } else {
                         // 任务执行成功删除任务
-                        $this->_redis->hDel(config('queue.task'), $taskId);
+                        $this->_redis->hDel(config('app.queue.task'), $taskId);
                     }
                 }
 
-                $this->_redis->lPush(config('queue.log'), json_encode($logs));
+                $this->_redis->lPush(config('app.queue.log'), json_encode($logs));
             });
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
@@ -178,7 +178,7 @@ class TaskLogic
             $this->_redis->zRemRangeByScore($queueName, $min, $max);
 
             foreach ($taskIds as $k => $v) {
-                $this->_redis->lPush(config('queue.worker'), $v);
+                $this->_redis->lPush(config('app.queue.worker'), $v);
             }
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
