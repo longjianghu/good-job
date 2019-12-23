@@ -37,6 +37,16 @@ class TaskValidator
     protected $step = 0;
 
     /**
+     * 重试间隔
+     *
+     * @IsInt(message="retryTotal.IsInt")
+     * @Min(value=0,message="retryTotal.Min")
+     * @Max(value=10,message="retryTotal.Max")
+     * @var int
+     */
+    protected $retryTotal = 0;
+
+    /**
      * 接口地址
      *
      * @NotEmpty(message="linkUrl.NotEmpty")
