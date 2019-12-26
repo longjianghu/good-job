@@ -94,7 +94,7 @@ class ApiMiddleware implements MiddlewareInterface
             if (ArrayHelper::getValue($validator, 'code') != 200) {
                 throw new \Exception(ArrayHelper::getValue($validator, 'message'));
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
 
             return context()->getResponse()->withData($status);
@@ -151,7 +151,7 @@ class ApiMiddleware implements MiddlewareInterface
             }
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
         }
 
