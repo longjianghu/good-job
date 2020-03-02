@@ -7,6 +7,7 @@ use Swoft\Validator\Annotation\Mapping\IsString;
 use Swoft\Validator\Annotation\Mapping\Max;
 use Swoft\Validator\Annotation\Mapping\Min;
 use Swoft\Validator\Annotation\Mapping\NotEmpty;
+use Swoft\Validator\Annotation\Mapping\Required;
 use Swoft\Validator\Annotation\Mapping\Validator;
 
 /**
@@ -22,7 +23,7 @@ class TaskValidator
      *
      * @NotEmpty(message="appName.NotEmpty")
      * @IsString(message="appName.IsString")
-     * @var string
+     * @Required()
      */
     protected $appName;
 
@@ -51,7 +52,7 @@ class TaskValidator
      *
      * @NotEmpty(message="linkUrl.NotEmpty")
      * @IsString(message="linkUrl.IsString")
-     * @var string
+     * @Required()
      */
     protected $linkUrl;
 

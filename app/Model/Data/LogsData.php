@@ -42,7 +42,7 @@ class LogsData
      * @access public
      * @return array
      */
-    public function create()
+    public function monitor()
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 

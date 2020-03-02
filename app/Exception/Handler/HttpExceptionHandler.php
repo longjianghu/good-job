@@ -22,19 +22,20 @@ class HttpExceptionHandler extends AbstractHttpErrorHandler
      */
     public function handle(Throwable $e, Response $response): Response
     {
-        CLog::error($e->getMessage());
-
-        if ( ! APP_DEBUG) {
-            return $response->withStatus(500)->withContent(sprintf(' %s At %s line %d', $e->getMessage(), $e->getFile(), $e->getLine()));
-        }
-
-        $data = [
-            'code'  => $e->getCode(),
-            'error' => sprintf('(%s) %s', get_class($e), $e->getMessage()),
-            'file'  => sprintf('At %s line %d', $e->getFile(), $e->getLine()),
-            'trace' => $e->getTraceAsString(),
+        $status = [
+            'code'    => $e->getCode(),
+            'data'    => [],
+            'message' => \Swoft::t(sprintf('validator.%s', $e->getMessage()), [])
         ];
 
-        return $response->withData($data);
+        if ( ! empty(APP_DEBUG)) {
+            $status['data'] = [
+                'error' => sprintf('(%s) %s', get_class($e), $e->getMessage()),
+                'file'  => sprintf('At %s line %d', $e->getFile(), $e->getLine()),
+                'trace' => $e->getTraceAsString(),
+            ];
+        }
+
+        return $response->withData($status);
     }
 }

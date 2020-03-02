@@ -36,9 +36,9 @@ vi .env # 请根据实际情况进行调整
 为了便于项目的部署,我们制作好了一个基础运行镜像，只需要简单的几步即可完成项目的部署。
 
 ```bash
-docker pull longjianghu/swoft:1.1
+docker pull longjianghu/swoft:1.2.2
 
-docker run --rm -it -v /data/var/www/good-job:/data longjianghu/swoft:1.1 sh
+docker run --rm -it -v /data/var/www/good-job:/data longjianghu/swoft:1.2.2 sh
 ```
 
 ### Composer安装
@@ -59,13 +59,7 @@ php ./bin/swoft migrate:up -y
 ### 运行容器(可选)
 
 ```bash
-docker run --name good-job -p 8081:18306 -v /data/var/www/good-job:/data -d longjianghu/swoft:1.2.1 php /data/bin/swoft http:start
-```
-
-### 启动任务进程
-
-```bash
-docker exec -it good-job php /data/bin/swoft process:start -d
+docker run --name good-job -p 8081:18306 -v /data/var/www/good-job:/data -d longjianghu/swoft:1.2.2 php /data/bin/swoft http:start
 ```
 
 ### 应用接入

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use App\Process\NotifyProcess;
+use App\Process\WorkerProcess;
 
 use Swoft\Db\Pool;
 use Swoft\Db\Database;
@@ -19,7 +19,7 @@ return [
         'port'     => 18306,
         'listener' => [],
         'process'  => [
-            'notify'  => bean(NotifyProcess::class),
+            'worker'  => bean(WorkerProcess::class),
             'crontab' => bean(CrontabProcess::class)
         ],
         'on'       => [
@@ -29,7 +29,6 @@ return [
         'setting'  => [
             'worker_num'            => env('WORKER_NUM', 3),
             'dispatch_mode'         => 3,
-            'task_worker_num'       => env('TASK_WORKER_NUM', 0),
             'task_enable_coroutine' => true
         ]
     ],

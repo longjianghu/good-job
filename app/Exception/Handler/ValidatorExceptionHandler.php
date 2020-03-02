@@ -37,8 +37,6 @@ class ValidatorExceptionHandler extends AbstractHttpErrorHandler
             ];
         }
 
-        CLog::error($status['message']);
-
         return $response->withData($status);
     }
 }

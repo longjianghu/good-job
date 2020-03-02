@@ -214,8 +214,6 @@ class TaskData
                 'secret_key'  => $secretKey,
                 'step'        => (int)ArrayHelper::getValue($post, 'step', 0),
                 'retry_total' => (int)ArrayHelper::getValue($post, 'retryTotal', config('app.retryTotal', 0)),
-                'mobile'      => ArrayHelper::getValue($post, 'mobile'),
-                'email'       => ArrayHelper::getValue($post, 'email'),
                 'link_url'    => ArrayHelper::getValue($post, 'linkUrl'),
                 'remark'      => ArrayHelper::getValue($post, 'remark'),
                 'created_at'  => time(),

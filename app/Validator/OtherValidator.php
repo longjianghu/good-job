@@ -5,6 +5,7 @@ namespace App\Validator;
 use Swoft\Validator\Annotation\Mapping\Date;
 use Swoft\Validator\Annotation\Mapping\IsString;
 use Swoft\Validator\Annotation\Mapping\NotEmpty;
+use Swoft\Validator\Annotation\Mapping\Required;
 use Swoft\Validator\Annotation\Mapping\Validator;
 
 /**
@@ -20,7 +21,7 @@ class OtherValidator
      *
      * @NotEmpty(message="taskId.NotEmpty")
      * @IsString(message="taskId.IsString")
-     * @var string
+     * @Required()
      */
     protected $taskId;
 }

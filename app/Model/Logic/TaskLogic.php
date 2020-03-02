@@ -29,7 +29,7 @@ class TaskLogic
     private $_redis;
 
     /**
-     * 执行任务
+     * 任务执行Worker
      *
      * @access public
      * @return array
@@ -45,7 +45,8 @@ class TaskLogic
                 throw new \Exception('没有需要执行的任务!');
             }
 
-            $task = $this->_redis->hGet(config('app.queue.task'), $taskId);
+            $queueName = config('app.queue.task');
+            $task      = $this->_redis->hGet($queueName, $taskId);
 
             if (empty($task)) {
                 throw new \Exception('任务信息获取失败!');
@@ -57,7 +58,7 @@ class TaskLogic
                 throw new \Exception('任务数据解析失败!');
             }
 
-            sgo(function () use ($task, $taskId) {
+            sgo(function () use ($queueName, $task, $taskId) {
                 $appKey    = ArrayHelper::getValue($task, 'appKey');
                 $secretKey = ArrayHelper::getValue($task, 'secretKey');
                 $taskNo    = ArrayHelper::getValue($task, 'taskNo');
@@ -72,11 +73,13 @@ class TaskLogic
                 $logs  = ['taskId' => $taskId, 'retry' => $retryNum, 'remark' => '任务执行成功!', 'created_at' => time()];
                 $abort = $this->_redis->get($taskId);
 
+                // 是否删除任务数据
+                $remove = true;
+
                 if ( ! empty($abort)) { // 系统拦截
                     $logs['remark'] = '系统拦截';
 
                     $this->_abortDao->updateTaskStatus($taskId, 1);
-                    $this->_redis->set($taskId, 1, 0);
                 } else { // 未被拦截
                     $header = [
                         'app-key'   => $appKey,
@@ -112,6 +115,8 @@ class TaskLogic
                         $logs['remark'] = (is_string($data)) ? $data : json_encode($data);
 
                         if ($retryNum < $retryTotal) {
+                            $remove = false;
+
                             $data = [
                                 'appKey'    => $appKey,
                                 'secretKey' => $secretKey,
@@ -128,14 +133,13 @@ class TaskLogic
                             // 提交到重试队列
                             $step *= $retryNum;
                             $this->_redis->zAdd(config('app.queue.retry'), [$taskId => time() + $step]);
-                        } else {
-                            // 重试次数为0时提交预警信息
-                            $this->_redis->lPush(config('app.queue.notify'), $taskId);
                         }
-                    } else {
-                        // 任务执行成功删除任务
-                        $this->_redis->hDel(config('app.queue.task'), $taskId);
                     }
+                }
+
+                // 任务执行成功删除任务
+                if ( ! empty($remove)) {
+                    $this->_redis->hDel($queueName, $taskId);
                 }
 
                 $this->_redis->lPush(config('app.queue.log'), json_encode($logs));

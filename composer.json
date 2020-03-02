@@ -23,16 +23,11 @@
     "swoft/redis": "~2.0.0",
     "swoft/framework": "~2.0.0",
     "swoft/http-server": "~2.0.0",
-    "swoft/rpc-client": "~2.0.0",
-    "swoft/rpc-server": "~2.0.0",
-    "swoft/websocket-server": "~2.0.0",
-    "swoft/tcp-server": "~2.0.0",
     "swoft/process": "~2.0.0",
     "swoft/crontab": "~2.0.0",
     "swoft/devtool": "~2.0.0",
     "swoft/validator": "^2.0",
-    "guzzlehttp/guzzle": "^6.3",
-    "nette/mail": "^3.1"
+    "guzzlehttp/guzzle": "^6.3"
   },
   "require-dev": {
     "swoft/swoole-ide-helper": "dev-master",

@@ -5,6 +5,7 @@ namespace App\Validator;
 use Swoft\Validator\Annotation\Mapping\Date;
 use Swoft\Validator\Annotation\Mapping\IsString;
 use Swoft\Validator\Annotation\Mapping\NotEmpty;
+use Swoft\Validator\Annotation\Mapping\Required;
 use Swoft\Validator\Annotation\Mapping\Validator;
 
 /**
@@ -20,7 +21,7 @@ class PushValidator
      *
      * @NotEmpty(message="taskNo.NotEmpty")
      * @IsString(message="taskNo.IsString")
-     * @var string
+     * @Required()
      */
     protected $taskNo;
 
@@ -29,7 +30,7 @@ class PushValidator
      *
      * @IsString(message="runtime.IsString")
      * @Date(message="runtime.Date")
-     * @var string
+     * @Required()
      */
     protected $runtime;
 
@@ -38,7 +39,7 @@ class PushValidator
      *
      * @NotEmpty(message="content.NotEmpty")
      * @IsString(message="content.IsString")
-     * @var string
+     * @Required()
      */
     protected $content;
 
