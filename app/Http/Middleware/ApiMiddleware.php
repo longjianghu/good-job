@@ -137,17 +137,17 @@ class ApiMiddleware implements MiddlewareInterface
 
             ksort($data);
 
-            $temp = [];
+            $arr = [];
 
             foreach ($data as $k => $v) {
-                $temp[] = sprintf('%s=%s', $k, $v);
+                $arr[] = sprintf('%s=%s', $k, $v);
             }
 
-            $str = implode('&', $temp);
+            $str = implode('&', $arr);
             $str = md5(md5($str).$secretKey);
 
-            if ($str != $signature && APP_DEBUG == 0) {
-                throw new \Exception('用户签名不正确！');
+            if ($str != $signature) {
+                throw new \Exception((APP_DEBUG == 1) ? $str : '用户签名不正确！');
             }
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];

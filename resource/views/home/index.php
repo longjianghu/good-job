@@ -347,6 +347,7 @@
 </section>
 <section class="content">
     <h3>接口鉴权</h3>
+    <p>APP_DEBUG=1时，当签名不正确时会输出签名字符串！</p>
     <h4>头部信息</h4>
     <table class="table table-hover">
         <thead>
