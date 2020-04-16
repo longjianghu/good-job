@@ -8,6 +8,7 @@ use Swoft\Process\Process;
 use Swoft\Process\UserProcess;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
+use Swoole\Coroutine;
 
 /**
  * 异常预警
@@ -35,6 +36,8 @@ class WorkerProcess extends UserProcess
     public function run(Process $process): void
     {
         while (true) {
+            Coroutine::sleep(1);
+
             $this->_taskLogic->worker();
             $this->_logsData->monitor();
         }
