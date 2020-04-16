@@ -6,7 +6,7 @@
 
 > ** 一款简易的任务管理系统 **
 
-系统通过调用接口方式执行任务(解耦)和任务重试，调用方需要通过接口方式实现自已的业务逻辑。系统预警目前只能通过邮件和手机短信(需要自行实现)的方式进行通知。
+系统通过调用接口方式执行任务(解耦)和任务重试，调用方需要通过接口方式实现自已的业务逻辑。
 
 ## 运行环境
 
@@ -60,6 +60,12 @@ php ./bin/swoft migrate:up -y
 
 ```bash
 docker run --name good-job -p 8081:18306 -v /data/var/www/good-job:/data -d longjianghu/swoft:1.2.2 php /data/bin/swoft http:start
+```
+
+### 启动用户进程
+
+```bash
+docker exec -it good-job php /data/bin/swoft process:start -d
 ```
 
 ### 应用接入
