@@ -8,7 +8,6 @@ use App\Model\Logic\TaskLogic;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Crontab\Annotaion\Mapping\Cron;
 use Swoft\Crontab\Annotaion\Mapping\Scheduled;
-use Swoft\Log\Helper\CLog;
 
 /**
  * 定时任务
