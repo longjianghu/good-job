@@ -5,6 +5,7 @@ namespace App\Process;
 use App\Model\Data\LogsData;
 use App\Model\Logic\TaskLogic;
 
+use Swoole\Coroutine;
 use Swoole\Process\Pool;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Process\Contract\ProcessInterface;
@@ -37,6 +38,8 @@ class WorkerProcess implements ProcessInterface
     public function run(Pool $pool, int $workerId): void
     {
         while (true) {
+            Coroutine::sleep(1);
+
             $this->_taskLogic->worker();
             $this->_logsData->monitor();
         }
