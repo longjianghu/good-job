@@ -4,18 +4,19 @@ namespace App\Process;
 
 use App\Model\Data\LogsData;
 use App\Model\Logic\TaskLogic;
-use Swoft\Process\Process;
-use Swoft\Process\UserProcess;
-use Swoft\Bean\Annotation\Mapping\Bean;
+
+use Swoole\Process\Pool;
 use Swoft\Bean\Annotation\Mapping\Inject;
+use Swoft\Process\Contract\ProcessInterface;
+use Swoft\Process\Annotation\Mapping\Process;
 
 /**
- * 异常预警
+ * 任务处理
  *
  * @package App\Process
- * @Bean()
+ * @Process(workerId={0,1,2})
  */
-class WorkerProcess extends UserProcess
+class WorkerProcess implements ProcessInterface
 {
     /**
      * @Inject()
@@ -30,9 +31,10 @@ class WorkerProcess extends UserProcess
     private $_logsData;
 
     /**
-     * @param Process $process
+     * @param Pool $pool
+     * @param int  $workerId
      */
-    public function run(Process $process): void
+    public function run(Pool $pool, int $workerId): void
     {
         while (true) {
             $this->_taskLogic->worker();

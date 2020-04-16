@@ -19,7 +19,6 @@ return [
         'port'     => 18306,
         'listener' => [],
         'process'  => [
-            'worker'  => bean(WorkerProcess::class),
             'crontab' => bean(CrontabProcess::class)
         ],
         'on'       => [
