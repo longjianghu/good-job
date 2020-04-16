@@ -101,11 +101,11 @@ return [
     'redisPool'          => [
         'class'       => \Swoft\Redis\Pool::class,
         'redisDb'     => \bean('redis'),
-        'minActive'   => 10,
-        'maxActive'   => 20,
-        'maxWait'     => 0,
-        'maxWaitTime' => 0,
-        'maxIdleTime' => 40,
+        'minActive'   => 5,
+        'maxActive'   => 10,
+        'maxWait'     => 3,
+        'maxWaitTime' => 3,
+        'maxIdleTime' => 60,
     ],
     'dbJob'              => [
         'class'   => Database::class,
@@ -130,10 +130,10 @@ return [
     'dbJobPool'          => [
         'class'       => Pool::class,
         'database'    => \bean('dbJob'),
-        'minActive'   => 10,
-        'maxActive'   => 20,
-        'maxWait'     => 0,
-        'maxWaitTime' => 0,
+        'minActive'   => 5,
+        'maxActive'   => 10,
+        'maxWait'     => 3,
+        'maxWaitTime' => 3,
         'maxIdleTime' => 60,
     ],
 ];
