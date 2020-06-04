@@ -71,23 +71,6 @@ CREATE TABLE `logs` (
 ) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='系统日志';
 
 -- ----------------------------
--- Table structure for notify
--- ----------------------------
-DROP TABLE IF EXISTS `notify`;
-CREATE TABLE `notify` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `is_deleted` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除',
-  `task_id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '任务ID',
-  `receiver` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '收件人',
-  `retry` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '重试次数',
-  `task_no` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '任务编号',
-  `created_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
-  `updated_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  KEY `task_id` (`task_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='预警记录';
-
--- ----------------------------
 -- Table structure for task
 -- ----------------------------
 DROP TABLE IF EXISTS `task`;
