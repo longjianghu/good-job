@@ -5,16 +5,10 @@ namespace App\Http\Middleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\BeanFactory;
+
 use Swoft\Http\Message\Request;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Server\Contract\MiddlewareInterface;
-use Swoft\Http\Server\Router\Route;
-use Swoft\Http\Server\Router\Router;
-use Swoft\Validator\Exception\ValidatorException;
-use Swoft\Validator\ValidateRegister;
-use Swoft\Validator\Validator;
-use function explode;
 
 /**
  * TrimMiddleware
