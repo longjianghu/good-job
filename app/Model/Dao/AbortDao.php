@@ -6,7 +6,7 @@ use Swoft\Db\DB;
 use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
- * 任务
+ * 取消任务
  *
  * @package App\Model\Dao
  * @Bean()

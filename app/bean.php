@@ -1,7 +1,5 @@
 <?php declare(strict_types=1);
 
-use App\Process\WorkerProcess;
-
 use Swoft\Db\Pool;
 use Swoft\Db\Database;
 use Swoft\Redis\RedisDb;
@@ -38,11 +36,11 @@ return [
     ],
     'httpDispatcher'     => [
         'middlewares'      => [
-            \App\Http\Middleware\FavIconMiddleware::class,
-            \Swoft\View\Middleware\ViewMiddleware::class,
+            App\Http\Middleware\FavIconMiddleware::class,
+            App\Http\Middleware\TrimMiddleware::class,
         ],
         'afterMiddlewares' => [
-            \Swoft\Http\Server\Middleware\ValidatorMiddleware::class
+            Swoft\Http\Server\Middleware\ValidatorMiddleware::class
         ]
     ],
     'migrationManager'   => ['migrationPath' => '@app/Migration'],

@@ -2,11 +2,11 @@
 
 namespace App\Model\Dao;
 
-use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Db\DB;
+use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
- * 任务
+ * 任务日志
  *
  * @package App\Model\Dao
  * @Bean()
