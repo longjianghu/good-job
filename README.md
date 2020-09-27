@@ -23,7 +23,7 @@
 > 请根据你的实际路径进行调整
 
 ```
-docker run --name good.job -v /data/var/etc/good-job.cnf:/data/.env --restart=always -d longjianghu/good-job:1.0.0
+docker run --name good.job -p 8083:18306 -v /data/var/etc/good-job.cnf:/data/.env --restart=always -d longjianghu/good-job:1.0.0
 ```
 
 ## 自行部署
@@ -61,7 +61,7 @@ step4:
 退出窗口并执行
 
 ```
-docker run --name good.job -p 8081:18306 -v /data/var/www/good-job:/data --restart=always -d longjianghu/swoft:4.5.2
+docker run --name good.job -p 8083:18306 -v /data/var/www/good-job:/data --restart=always -d longjianghu/swoft:4.5.2
 ```
 
 ## 应用接入
