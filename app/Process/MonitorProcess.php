@@ -6,18 +6,18 @@ use App\Model\Data\LogsData;
 use App\Model\Logic\TaskLogic;
 
 use Swoole\Coroutine;
-use Swoole\Process\Pool;
+use Swoft\Process\Process;
+use Swoft\Process\UserProcess;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
-use Swoft\Process\Contract\ProcessInterface;
-use Swoft\Process\Annotation\Mapping\Process;
 
 /**
- * 任务处理
+ * MonitorProcess
  *
- * @package App\Process
- * @Process(workerId={0,1,2})
+ * @since 2.0
+ * @Bean()
  */
-class WorkerProcess implements ProcessInterface
+class MonitorProcess extends UserProcess
 {
     /**
      * @Inject()
@@ -32,16 +32,15 @@ class WorkerProcess implements ProcessInterface
     private $_logsData;
 
     /**
-     * @param Pool $pool
-     * @param int  $workerId
+     * @param Process $process
      */
-    public function run(Pool $pool, int $workerId): void
+    public function run(Process $process): void
     {
         while (true) {
-            Coroutine::sleep(1);
-
             $this->_taskLogic->worker();
             $this->_logsData->monitor();
+
+            Coroutine::sleep(1);
         }
     }
 }

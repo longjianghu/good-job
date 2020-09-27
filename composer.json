@@ -30,8 +30,7 @@
     "guzzlehttp/guzzle": "^6.3"
   },
   "require-dev": {
-    "swoft/swoole-ide-helper": "dev-master",
-    "phpunit/phpunit": "^7.5"
+    "swoft/swoole-ide-helper": "dev-master"
   },
   "autoload": {
     "psr-4": {

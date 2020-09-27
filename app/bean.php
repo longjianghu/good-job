@@ -4,7 +4,7 @@ use Swoft\Db\Pool;
 use Swoft\Db\Database;
 use Swoft\Redis\RedisDb;
 use Swoft\Server\SwooleEvent;
-use Swoft\Process\ProcessPool;
+use App\Process\MonitorProcess;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Log\Handler\FileHandler;
 use Swoft\Task\Swoole\TaskListener;
@@ -27,7 +27,10 @@ return [
             'worker_num'            => env('WORKER_NUM', 3),
             'dispatch_mode'         => 3,
             'task_enable_coroutine' => true
-        ]
+        ],
+        'process'  => [
+            'monitor' => bean(MonitorProcess::class)
+        ],
     ],
     'i18n'               => [
         'resoucePath'     => '@resource/language/',
@@ -45,41 +48,28 @@ return [
     ],
     'migrationManager'   => ['migrationPath' => '@app/Migration'],
     'lineFormatter'      => [
-        'format'     => '%datetime% [%level_name%] [%channel%] [%event%] [tid:%tid%] [cid:%cid%] [traceid:%traceid%] [spanid:%spanid%] [parentid:%parentid%] %messages%',
+        'format'     => '%datetime% [%level_name%] [%channel%] [%event%] [tid:%tid%] [cid:%cid%] %messages%',
         'dateFormat' => 'Y-m-d H:i:s',
     ],
     'noticeHandler'      => [
         'class'     => FileHandler::class,
-        'logFile'   => '@runtime/logs/notice-%d{Y-m-d}.log',
+        'logFile'   => '@runtime/logs/sys-%d{Y-m-d}.log',
         'formatter' => \bean('lineFormatter'),
-        'levels'    => 'notice,debug,trace',
+        'levels'    => 'notice,error,warning,trace',
     ],
     'applicationHandler' => [
         'class'     => FileHandler::class,
-        'logFile'   => '@runtime/logs/error-%d{Y-m-d}.log',
+        'logFile'   => '@runtime/logs/app-%d{Y-m-d}.log',
         'formatter' => \bean('lineFormatter'),
-        'levels'    => 'error,warning',
-    ],
-    'infoHandler'        => [
-        'class'     => FileHandler::class,
-        'logFile'   => '@runtime/logs/info-%d{Y-m-d}.log',
-        'formatter' => \bean('lineFormatter'),
-        'levels'    => 'info',
+        'levels'    => 'info,debug',
     ],
     'logger'             => [
-        'flushInterval' => 1,
-        'flushRequest'  => false,
-        'enable'        => env('LOG_ENABLE', false),
-        'json'          => false,
-        'handlers'      => [
+        'flushRequest' => false,
+        'enable'       => true,
+        'handlers'     => [
             'application' => \bean('applicationHandler'),
             'notice'      => \bean('noticeHandler'),
-            'info'        => \bean('infoHandler'),
         ],
-    ],
-    'processPool'        => [
-        'class'     => ProcessPool::class,
-        'workerNum' => env('WORKER_NUM', 3)
     ],
     'redis'              => [
         'class'         => RedisDb::class,

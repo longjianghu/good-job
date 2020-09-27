@@ -4,71 +4,67 @@
     </a>
 </p>
 
+# GoodJob
+
 > ** 一款简易的任务管理系统 **
 
-系统通过调用接口方式执行任务(解耦)和任务重试，调用方需要通过接口方式实现自已的业务逻辑。
+系统通过调用接口方式执行任务(自带重试机制)，被调用方需要自已实现对应的业务逻辑。
 
 ## 运行环境
 
-系统其于 <a href="http://www.swoft.org" target="_blank" title="Swoft官网">Swoft2.0.8</a> 开发,数据库采用 MySQL, 消息队列使用 Redis。建议使用<a href="https://www.docker.com/" target="_blank" title="Docker官网">Docker</a> 进行项目部署。
+系统其于 <a href="http://www.swoft.org" target="_blank" title="Swoft官网">Swoft2.0</a> 开发,数据库采用 MySQL, 消息队列使用 Redis。 
 
-## 如何使用
+## 初始化数据库
 
-> 如果你使用Docker进行项目部署，/data/var/www/good-job需要替换成你的项目部署目录。
+> 直接导入目录下的SQL文件创建相关数据表。
 
-> 当APP_DEBUG=1时,系统不会校验提交的签名(生产环境建议关闭)。
+## 使用镜像
 
-### 拉取代码
+> 请根据你的实际路径进行调整
 
-```bash
+```
+docker run --name good.job -v /data/var/etc/good-job.cnf:/data/.env --restart=always -d longjianghu/good-job:1.0.0
+```
+
+## 自行部署
+
+首先克隆项目到本地
+
+```
 git pull https://github.com/longjianghu/good-job.git
 ```
 
-### 更改配置
+step1:
 
-```bash
-cp .env.example .env
-vi .env # 请根据实际情况进行调整
+> /data/var/www/good-job 请根据你的实际路径进行调整。
+
+```
+docker run --rm -it -v /data/var/www/good-job:/data longjianghu/swoft:4.5.2 sh
 ```
 
-### Docker安装(可选)
+setp2:
 
-为了便于项目的部署,我们制作好了一个基础运行镜像，只需要简单的几步即可完成项目的部署。
-
-```bash
-docker pull longjianghu/swoft:1.2.2
-
-docker run --rm -it -v /data/var/www/good-job:/data longjianghu/swoft:1.2.2 sh
 ```
-
-### Composer安装
-
-```bash
 composer install
 ```
 
-### 初始化数据库
+step3:
 
-```bash
-php ./bin/swoft migrate:up -y
+```
+cp .env.example .env 
+
+vi .env // 请根据实际情况修改配置参数
 ```
 
-除了使用上面的命令之外你也可以直接导入目录下的SQL文件创建相关数据表。
+step4:
 
+退出窗口并执行
 
-### 运行容器(可选)
-
-```bash
-docker run --name good-job -p 8081:18306 -v /data/var/www/good-job:/data -d longjianghu/swoft:1.2.2 php /data/bin/swoft http:start
+```
+docker run --name good.job -p 8081:18306 -v /data/var/www/good-job:/data --restart=always -d longjianghu/swoft:4.5.2
 ```
 
-### 启动用户进程
-
-```bash
-docker exec -it good-job php /data/bin/swoft process:start -d
-```
-
-### 应用接入
+## 应用接入
 
 系统部署完成后输入系统访问地址即可查看所有的开放接口
 

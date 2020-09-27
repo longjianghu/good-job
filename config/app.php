@@ -2,7 +2,6 @@
 
 return [
     'retryTotal' => env('RETRY_TOTAL', 3), // 重试次数
-    // 消息队列
     'queue'      => [
         'worker' => 'worker', // 任务队列
         'retry'  => 'retry', // 重试队列
@@ -10,5 +9,5 @@ return [
         'task'   => 'task', // 任务详情
         'delay'  => 'delay', // 延迟队列
         'notify' => 'notify', // 预警提醒
-    ]
+    ], // 消息队列
 ];
