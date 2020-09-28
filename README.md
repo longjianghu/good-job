@@ -14,6 +14,16 @@
 
 系统其于 <a href="http://www.swoft.org" target="_blank" title="Swoft官网">Swoft2.0</a> 开发,数据库采用 MySQL, 消息队列使用 Redis。 
 
+## 安装 Docker
+
+```
+curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+
+usermod -aG docker  root
+
+systemctl start docker
+```
+
 ## 初始化数据库
 
 > 直接导入目录下的SQL文件创建相关数据表。
@@ -25,6 +35,8 @@
 ```
 docker run --name good.job -p 8083:18306 -v /data/var/etc/good-job.cnf:/data/.env --restart=always -d longjianghu/good-job:1.0.0
 ```
+
+> 请使用 .env.example 生成本地的配置文件。
 
 ## 自行部署
 
