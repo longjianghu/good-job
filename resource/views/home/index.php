@@ -127,88 +127,12 @@
         </tbody>
     </table>
     <h4>返回示例</h4>
-    <p>注意事项：你可以使用taskId查询任务执行结果。</p>
+    <p>注意事项：你可以使用taskId查询任务执行结果,自定义的任务编号不能重复！！。</p>
     <pre>
 {
     "code": 200,
     "data": {
         "taskId": "04479d0a8ec8a5784cfededf7de970c5"
-    },
-    "message": ""
-}
-        </pre>
-</section>
-<section class="content">
-    <h3>任务查询</h3>
-    <p>接口 URI：/task/detail</p>
-    <p>提交方法：POST</p>
-    <p>是否鉴权：是</p>
-    <h4>提交参数</h4>
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th width="100px">参数</th>
-            <th width="50px">类型</th>
-            <th width="100px">是否必填</th>
-            <th>描述信息</th>
-            <th>示例值</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>taskId</td>
-            <td>string</td>
-            <td>是</td>
-            <td>任务ID</td>
-            <td>Z9CMWQ0T8BP2R3V1F7UIJOG5EDSHNA6L</td>
-        </tr>
-        </tbody>
-    </table>
-    <h4>返回示例</h4>
-    <pre>
-{
-    "code": 200,
-    "data": {
-        "id": 5,
-        "isDeleted": 0,
-        "taskId": "8947bd7fca0bb2c5f716ee1e35ce0ce5",
-        "appKey": "4098668690234486",
-        "taskNo": "a5",
-        "status": 2,
-        "step": 10,
-        "runtime": 1567429800,
-        "content": "aabb",
-        "createdAt": 1567781645,
-        "updatedAt": 1567781676,
-        "logs": [
-            {
-                "id": 13,
-                "isDeleted": 0,
-                "taskId": "8947bd7fca0bb2c5f716ee1e35ce0ce5",
-                "retry": 1,
-                "remark": "",
-                "createdAt": 1567781645,
-                "updatedAt": 0
-            },
-            {
-                "id": 14,
-                "isDeleted": 0,
-                "taskId": "8947bd7fca0bb2c5f716ee1e35ce0ce5",
-                "retry": 2,
-                "remark": "",
-                "createdAt": 1567781656,
-                "updatedAt": 0
-            },
-            {
-                "id": 15,
-                "isDeleted": 0,
-                "taskId": "8947bd7fca0bb2c5f716ee1e35ce0ce5",
-                "retry": 3,
-                "remark": "",
-                "createdAt": 1567781676,
-                "updatedAt": 0
-            }
-        ]
     },
     "message": ""
 }
@@ -236,7 +160,7 @@
             <td>string</td>
             <td>是</td>
             <td>任务ID</td>
-            <td>5126798034387479</td>
+            <td>c0e539dd52d38a052fec7b96715a0ae7</td>
         </tr>
         </tbody>
     </table>
@@ -272,7 +196,7 @@
             <td>string</td>
             <td>是</td>
             <td>任务ID</td>
-            <td>5126798034387479</td>
+            <td>c0e539dd52d38a052fec7b96715a0ae7</td>
         </tr>
         </tbody>
     </table>
@@ -317,26 +241,19 @@
 {
     "code": 200,
     "data": {
-        "id": 12,
-        "isDeleted": 0,
-        "taskId": "e4f025e10e8253c6c809d84682047d1a",
-        "appKey": "4164257246765264",
-        "taskNo": "a12",
+        "taskId": "c0e539dd52d38a052fec7b96715a0ae7",
+        "taskNo": "a6",
         "status": 2,
         "step": 10,
-        "runtime": 1567239600,
-        "content": "aabb",
-        "createdAt": 1567239098,
-        "updatedAt": 1567240696,
+        "runtime": 1601255400,
+        "content": "haha",
+        "createdAt": 1601257976,
+        "updatedAt": 1601257978,
         "logs": [
             {
-                "id": 16,
-                "isDeleted": 0,
-                "taskId": "e4f025e10e8253c6c809d84682047d1a",
-                "code": 100,
-                "message": "系统拦截",
-                "content": "",
-                "createdAt": 1567240696,
+                "retry": 1,
+                "remark": "API接口异常,数据请求失败!",
+                "createdAt": 1601257978,
                 "updatedAt": 0
             }
         ]
