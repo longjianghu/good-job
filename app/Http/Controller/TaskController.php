@@ -37,7 +37,7 @@ class TaskController
      */
     public function abort(Request $request)
     {
-        $status = ['code' => 500, 'data' => [], 'message' => ''];
+        $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
             $taskId = $request->post('taskId');
@@ -68,7 +68,7 @@ class TaskController
      */
     public function create(Request $request)
     {
-        $status = ['code' => 500, 'data' => [], 'message' => ''];
+        $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
             $post   = $request->post();
@@ -100,7 +100,7 @@ class TaskController
      */
     public function detail(Request $request)
     {
-        $status = ['code' => 500, 'data' => [], 'message' => ''];
+        $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
             $taskId = $request->post('taskId');
@@ -132,7 +132,7 @@ class TaskController
      */
     public function push(Request $request)
     {
-        $status = ['code' => 500, 'data' => [], 'message' => ''];
+        $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
             $appKey = $request->getHeaderLine('app-key');
@@ -164,7 +164,7 @@ class TaskController
      */
     public function retry(Request $request)
     {
-        $status = ['code' => 500, 'data' => [], 'message' => ''];
+        $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
             $appKey = $request->getHeaderLine('app-key');
