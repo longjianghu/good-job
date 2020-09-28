@@ -119,12 +119,11 @@ class TaskLogic
                     $data  = (Arr::get($query, 'code') == 200) ? Arr::get($query, 'data') : 'API接口异常,数据请求失败!';
 
                     if (strtolower($data) != 'sucess') {
-                        $retryNum += 1;
-
                         $logs['remark'] = (is_string($data)) ? $data : json_encode($data);
 
                         if ($retryNum < $retryTotal) {
-                            $remove = false;
+                            $retryNum += 1;
+                            $remove   = false;
 
                             $data = [
                                 'appKey'     => $appKey,
