@@ -76,7 +76,6 @@ class TaskLogic
                 $step       = (int)Arr::get($task, 'step');
                 $retryNum   = (int)Arr::get($task, 'retryNum');
                 $retryTotal = (int)Arr::get($task, 'retryTotal');
-                $retryNum   += 1;
 
                 $logs  = ['taskId' => $taskId, 'retry' => $retryNum, 'remark' => '任务执行成功!', 'created_at' => time()];
                 $abort = $this->_redis->get($taskId);
@@ -113,26 +112,29 @@ class TaskLogic
 
                     $str = implode('&', $signature);
 
-                    $header['signature'] = md5(md5($str).$secretKey);
+                    $header['signature'] = md5($str.$secretKey);
 
                     // 发送请求
                     $query = send($linkUrl, $data, $header);
                     $data  = (Arr::get($query, 'code') == 200) ? Arr::get($query, 'data') : 'API接口异常,数据请求失败!';
 
                     if (strtolower($data) != 'sucess') {
+                        $retryNum += 1;
+
                         $logs['remark'] = (is_string($data)) ? $data : json_encode($data);
 
                         if ($retryNum < $retryTotal) {
                             $remove = false;
 
                             $data = [
-                                'appKey'    => $appKey,
-                                'secretKey' => $secretKey,
-                                'taskNo'    => $taskNo,
-                                'linkUrl'   => $linkUrl,
-                                'retry'     => $retryNum,
-                                'step'      => $step,
-                                'content'   => $content,
+                                'appKey'     => $appKey,
+                                'secretKey'  => $secretKey,
+                                'taskNo'     => $taskNo,
+                                'linkUrl'    => $linkUrl,
+                                'retryNum'   => $retryNum,
+                                'retryTotal' => $retryTotal,
+                                'step'       => $step,
+                                'content'    => $content,
                             ];
 
                             // 更新任务信息

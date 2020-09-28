@@ -333,10 +333,8 @@ class TaskData
                     'secretKey'  => Arr::get($application, 'secret_key'),
                     'taskNo'     => $taskNo,
                     'linkUrl'    => Arr::get($application, 'link_url'),
-                    'mobile'     => Arr::get($application, 'mobile'),
-                    'email'      => Arr::get($application, 'email'),
-                    'retryTotal' => Arr::get($application, 'retry_total', $this->_retryTotal),
                     'retryNum'   => 0,
+                    'retryTotal' => Arr::get($application, 'retry_total', $this->_retryTotal),
                     'step'       => Arr::get($application, 'step'),
                     'content'    => $content,
                 ];
