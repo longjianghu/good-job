@@ -17,7 +17,8 @@ return [
         'port'     => 18306,
         'listener' => [],
         'process'  => [
-            'crontab' => bean(CrontabProcess::class)
+            'crontab' => bean(CrontabProcess::class),
+            'monitor' => bean(MonitorProcess::class)
         ],
         'on'       => [
             SwooleEvent::TASK   => bean(TaskListener::class),
@@ -27,10 +28,7 @@ return [
             'worker_num'            => env('WORKER_NUM', 3),
             'dispatch_mode'         => 3,
             'task_enable_coroutine' => true
-        ],
-        'process'  => [
-            'monitor' => bean(MonitorProcess::class)
-        ],
+        ]
     ],
     'i18n'               => [
         'resoucePath'     => '@resource/language/',

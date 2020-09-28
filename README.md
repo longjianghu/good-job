@@ -48,6 +48,8 @@ setp2:
 composer install
 ```
 
+> TIPS:可以在容器里使用 php ./bin/swoft migrate:up -y 初始化数据库
+
 step3:
 
 ```

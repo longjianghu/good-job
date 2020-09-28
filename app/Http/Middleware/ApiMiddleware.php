@@ -3,12 +3,13 @@
 namespace App\Http\Middleware;
 
 use App\Model\Data\TaskData;
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+use Swoft\Stdlib\Helper\Arr;
 use Swoft\Http\Message\Request;
-use Swoft\Stdlib\Helper\ArrayHelper;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Http\Server\Contract\MiddlewareInterface;
@@ -91,8 +92,8 @@ class ApiMiddleware implements MiddlewareInterface
 
             $validator = $this->_checkUserSignature($data, $signature);
 
-            if (ArrayHelper::getValue($validator, 'code') != 200) {
-                throw new \Exception(ArrayHelper::getValue($validator, 'message'));
+            if (Arr::get($validator, 'code') != 200) {
+                throw new \Exception(Arr::get($validator, 'message'));
             }
         } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
@@ -126,14 +127,14 @@ class ApiMiddleware implements MiddlewareInterface
                 throw new \Exception('用户签名不能为空！');
             }
 
-            $appKey      = ArrayHelper::getValue($data, 'app-key');
+            $appKey      = Arr::get($data, 'app-key');
             $application = $this->_taskData->getApplicationInfo($appKey);
 
-            if (ArrayHelper::getValue($application, 'code') != 200) {
-                throw new \Exception(ArrayHelper::getValue($application, 'message'));
+            if (Arr::get($application, 'code') != 200) {
+                throw new \Exception(Arr::get($application, 'message'));
             }
 
-            $secretKey = ArrayHelper::getValue($application, 'data.secret_key');
+            $secretKey = Arr::get($application, 'data.secret_key');
 
             ksort($data);
 
@@ -144,7 +145,7 @@ class ApiMiddleware implements MiddlewareInterface
             }
 
             $str = implode('&', $arr);
-            $str = md5(md5($str).$secretKey);
+            $str = md5($str.$secretKey);
 
             if ($str != $signature) {
                 throw new \Exception((APP_DEBUG == 1) ? $str : '用户签名不正确！');

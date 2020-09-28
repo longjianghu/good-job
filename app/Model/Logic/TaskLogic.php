@@ -3,10 +3,12 @@
 namespace App\Model\Logic;
 
 use App\Model\Dao\AbortDao;
+
+use Swoft\Redis\Pool;
+use Swoft\Stdlib\Helper\Arr;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
-use Swoft\Stdlib\Helper\ArrayHelper;
-use Swoft\Redis\Pool;
+use Swoft\Config\Annotation\Mapping\Config;
 
 /**
  * 任务处理
@@ -16,6 +18,12 @@ use Swoft\Redis\Pool;
  */
 class TaskLogic
 {
+
+    /**
+     * @Config("app.queue")
+     */
+    private $_queue;
+
     /**
      * @Inject()
      * @var AbortDao
@@ -39,13 +47,13 @@ class TaskLogic
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
-            $taskId = $this->_redis->lPop(config('app.queue.worker'));
+            $taskId = $this->_redis->lPop(Arr::get($this->_queue, 'worker'));
 
             if (empty($taskId)) {
                 throw new \Exception('没有需要执行的任务!');
             }
 
-            $queueName = config('app.queue.task');
+            $queueName = Arr::get($this->_queue, 'task');
             $task      = $this->_redis->hGet($queueName, $taskId);
 
             if (empty($task)) {
@@ -59,15 +67,15 @@ class TaskLogic
             }
 
             sgo(function () use ($queueName, $task, $taskId) {
-                $appKey    = ArrayHelper::getValue($task, 'appKey');
-                $secretKey = ArrayHelper::getValue($task, 'secretKey');
-                $taskNo    = ArrayHelper::getValue($task, 'taskNo');
-                $linkUrl   = ArrayHelper::getValue($task, 'linkUrl');
-                $content   = ArrayHelper::getValue($task, 'content');
+                $appKey    = Arr::get($task, 'appKey');
+                $secretKey = Arr::get($task, 'secretKey');
+                $taskNo    = Arr::get($task, 'taskNo');
+                $linkUrl   = Arr::get($task, 'linkUrl');
+                $content   = Arr::get($task, 'content');
 
-                $step       = (int)ArrayHelper::getValue($task, 'step');
-                $retryNum   = (int)ArrayHelper::getValue($task, 'retryNum');
-                $retryTotal = (int)ArrayHelper::getValue($task, 'retryTotal');
+                $step       = (int)Arr::get($task, 'step');
+                $retryNum   = (int)Arr::get($task, 'retryNum');
+                $retryTotal = (int)Arr::get($task, 'retryTotal');
                 $retryNum   += 1;
 
                 $logs  = ['taskId' => $taskId, 'retry' => $retryNum, 'remark' => '任务执行成功!', 'created_at' => time()];
@@ -109,7 +117,7 @@ class TaskLogic
 
                     // 发送请求
                     $query = send($linkUrl, $data, $header);
-                    $data  = (ArrayHelper::getValue($query, 'code') == 200) ? ArrayHelper::getValue($query, 'data') : 'API接口异常,数据请求失败!';
+                    $data  = (Arr::get($query, 'code') == 200) ? Arr::get($query, 'data') : 'API接口异常,数据请求失败!';
 
                     if (strtolower($data) != 'sucess') {
                         $logs['remark'] = (is_string($data)) ? $data : json_encode($data);
@@ -128,11 +136,11 @@ class TaskLogic
                             ];
 
                             // 更新任务信息
-                            $this->_redis->hSet(config('app.queue.task'), $taskId, json_encode($data));
+                            $this->_redis->hSet(Arr::get($this->_queue, 'task'), $taskId, json_encode($data));
 
                             // 提交到重试队列
                             $step *= $retryNum;
-                            $this->_redis->zAdd(config('app.queue.retry'), [$taskId => time() + $step]);
+                            $this->_redis->zAdd(Arr::get($this->_queue, 'retry'), [$taskId => time() + $step]);
                         }
                     }
                 }
@@ -142,7 +150,7 @@ class TaskLogic
                     $this->_redis->hDel($queueName, $taskId);
                 }
 
-                $this->_redis->lPush(config('app.queue.log'), json_encode($logs));
+                $this->_redis->lPush(Arr::get($this->_queue, 'log'), json_encode($logs));
             });
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
@@ -160,7 +168,7 @@ class TaskLogic
      * @param string $queueName 队列名称
      * @return array
      */
-    public function monitor($queueName)
+    public function watch($queueName)
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
@@ -181,7 +189,7 @@ class TaskLogic
             $this->_redis->zRemRangeByScore($queueName, $min, $max);
 
             foreach ($taskIds as $k => $v) {
-                $this->_redis->lPush(config('app.queue.worker'), $v);
+                $this->_redis->lPush(Arr::get($this->_queue, 'worker'), $v);
             }
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];

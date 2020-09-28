@@ -7,6 +7,7 @@ use App\Model\Logic\TaskLogic;
 
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Crontab\Annotaion\Mapping\Cron;
+use Swoft\Config\Annotation\Mapping\Config;
 use Swoft\Crontab\Annotaion\Mapping\Scheduled;
 
 /**
@@ -17,6 +18,16 @@ use Swoft\Crontab\Annotaion\Mapping\Scheduled;
  */
 class Crontab
 {
+    /**
+     * @Config("app.queue.delay")
+     */
+    private $_delay;
+
+    /**
+     * @Config("app.queue.retry")
+     */
+    private $_retry;
+
     /**
      * @Inject()
      * @var TaskLogic
@@ -34,19 +45,19 @@ class Crontab
      *
      * @Cron("* * * * * *")
      */
-    public function watchTask()
+    public function monitor()
     {
-        $this->_taskLogic->monitor(config('app.queue.delay'));
-        $this->_taskLogic->monitor(config('app.queue.retry'));
+        $this->_taskLogic->watch($this->_delay);
+        $this->_taskLogic->watch($this->_retry);
     }
 
     /**
      * 定时任务
      *
-     * @Cron("0 0 * * * *")
+     * @Cron("0 * * * * *")
      */
-    public function pullTask()
+    public function scheduled()
     {
-        $this->_taskData->addTask();
+        $this->_taskData->scheduled();
     }
 }

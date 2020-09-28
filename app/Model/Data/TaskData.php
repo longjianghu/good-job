@@ -7,11 +7,12 @@ use App\Model\Dao\LogsDao;
 use App\Model\Dao\TaskDao;
 use App\Model\Dao\ApplicationDao;
 
+use Swoft\Db\DB;
+use Swoft\Redis\Pool;
+use Swoft\Stdlib\Helper\Arr;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
-use Swoft\Db\DB;
-use Swoft\Stdlib\Helper\ArrayHelper;
-use Swoft\Redis\Pool;
+use Swoft\Config\Annotation\Mapping\Config;
 
 /**
  * 任务处理
@@ -22,6 +23,16 @@ use Swoft\Redis\Pool;
 class TaskData
 {
     const POOL = 'dbJobPool';
+
+    /**
+     * @Config("app.queue")
+     */
+    private $_queue = [];
+
+    /**
+     * @Config("app.retryTotal")
+     */
+    private $_retryTotal = 0;
 
     /**
      * @Inject()
@@ -54,69 +65,6 @@ class TaskData
     private $_redis;
 
     /**
-     * 添加任务
-     *
-     * @access public
-     * @return array
-     */
-    public function addTask()
-    {
-        $status = ['code' => 0, 'data' => [], 'message' => ''];
-
-        try {
-            $result = $this->_taskDao->findPendingTask();
-
-            if (empty($result)) {
-                throw new \Exception('一小时内没有需要执行的任务!');
-            }
-
-            foreach ($result as $k => $v) {
-                $taskId  = ArrayHelper::getValue($v, 'task_id');
-                $runtime = ArrayHelper::getValue($v, 'runtime');
-                $appKey  = ArrayHelper::getValue($v, 'app_key');
-
-                $application = $this->getApplicationInfo($appKey);
-
-                if (ArrayHelper::getValue($application, 'code') != 200) {
-                    throw new \Exception(ArrayHelper::getValue($application, 'message'));
-                }
-
-                $application = ArrayHelper::getValue($application, 'data');
-
-                $data = [
-                    'appKey'     => $appKey,
-                    'secretKey'  => ArrayHelper::getValue($application, 'secret_key'),
-                    'linkUrl'    => ArrayHelper::getValue($application, 'link_url'),
-                    'mobile'     => ArrayHelper::getValue($application, 'mobile'),
-                    'email'      => ArrayHelper::getValue($application, 'email'),
-                    'retryTotal' => (int)ArrayHelper::getValue($application, 'retry_total', config('app.retryTotal', 0)),
-                    'retryNum'   => 0,
-                    'step'       => (int)ArrayHelper::getValue($v, 'step', 0),
-                    'content'    => ArrayHelper::getValue($v, 'content'),
-                ];
-
-                $this->_redis->hSetNx(config('app.queue.task'), $taskId, json_encode($data));
-                $delay = $runtime - time();
-
-                if ($delay > 0) { // 延迟任务
-                    $this->_redis->zAdd(config('app.queue.delay'), [$taskId => $runtime]);
-                } else { // 立即执行
-                    $this->_redis->lPush(config('app.queue.worker'), $taskId);
-                }
-
-                // 更新任务状态为处理中
-                $this->_taskDao->updateTaskStatus($taskId, 1);
-            }
-
-            $status = ['code' => 200, 'data' => [], 'message' => ''];
-        } catch (\Throwable $e) {
-            $status['message'] = $e->getMessage();
-        }
-
-        return $status;
-    }
-
-    /**
      * 取消任务
      *
      * @access public
@@ -140,7 +88,7 @@ class TaskData
                 throw new \Exception('任务信息获取失败!');
             }
 
-            if (ArrayHelper::getValue($result, 'status') != 0) {
+            if (Arr::get($result, 'status') != 0) {
                 throw new \Exception('任务已执行拦截失败!');
             }
 
@@ -151,7 +99,7 @@ class TaskData
             }
 
             $state   = 0;
-            $runtime = ArrayHelper::getValue($result, 'runtime');
+            $runtime = Arr::get($result, 'runtime');
             // 如果大于一小时直接更新任务状态为已取消
             if ($runtime - time() > 3600) {
                 $state = 1;
@@ -210,12 +158,12 @@ class TaskData
 
             $data = [
                 'app_key'     => $appKey,
-                'app_name'    => ArrayHelper::getValue($post, 'appName'),
+                'app_name'    => Arr::get($post, 'appName'),
                 'secret_key'  => $secretKey,
-                'step'        => (int)ArrayHelper::getValue($post, 'step', 0),
-                'retry_total' => (int)ArrayHelper::getValue($post, 'retryTotal', config('app.retryTotal', 0)),
-                'link_url'    => ArrayHelper::getValue($post, 'linkUrl'),
-                'remark'      => ArrayHelper::getValue($post, 'remark'),
+                'step'        => (int)Arr::get($post, 'step', 0),
+                'retry_total' => (int)Arr::get($post, 'retryTotal', $this->_retryTotal),
+                'link_url'    => Arr::get($post, 'linkUrl'),
+                'remark'      => Arr::get($post, 'remark'),
                 'created_at'  => time(),
                 'updated_at'  => 0
             ];
@@ -254,13 +202,34 @@ class TaskData
                 throw new \Exception('任务ID不能为空!');
             }
 
-            $data = $this->_taskDao->findByTaskId($taskId);
+            $result = $this->_taskDao->findByTaskId($taskId);
 
-            if (empty($data)) {
+            if (empty($result)) {
                 throw new \Exception('没有找到相任务记录!');
             }
 
-            $data['logs'] = $this->_logsDao->findAllByTaskId($taskId);
+            $logs = $this->_logsDao->findAllByTaskId($taskId);
+
+            $data = [
+                'taskId'    => Arr::get($result, 'task_id'),
+                'taskNo'    => Arr::get($result, 'task_no'),
+                'status'    => Arr::get($result, 'status'),
+                'step'      => Arr::get($result, 'step'),
+                'runtime'   => Arr::get($result, 'runtime'),
+                'content'   => Arr::get($result, 'content'),
+                'createdAt' => Arr::get($result, 'created_at'),
+                'updatedAt' => Arr::get($result, 'updated_at'),
+                'logs'      => []
+            ];
+
+            foreach ($logs as $k => $v) {
+                $data['logs'][] = [
+                    'retry'     => Arr::get($v, 'retry'),
+                    'remark'    => Arr::get($v, 'remark'),
+                    'createdAt' => Arr::get($v, 'created_at'),
+                    'updatedAt' => Arr::get($v, 'updated_at'),
+                ];
+            }
 
             $status = ['code' => 200, 'data' => $data, 'message' => ''];
         } catch (\Throwable $e) {
@@ -293,18 +262,18 @@ class TaskData
 
             $application = $this->getApplicationInfo($appKey);
 
-            if (ArrayHelper::getValue($application, 'code') != 200) {
-                throw new \Exception(ArrayHelper::getValue($application, 'message'));
+            if (Arr::get($application, 'code') != 200) {
+                throw new \Exception(Arr::get($application, 'message'));
             }
 
-            $application = ArrayHelper::getValue($application, 'data');
+            $application = Arr::get($application, 'data');
 
-            $taskNo = ArrayHelper::getValue($post, 'taskNo');
+            $taskNo = Arr::get($post, 'taskNo');
 
-            $runtime = ArrayHelper::getValue($post, 'runtime');
+            $runtime = Arr::get($post, 'runtime');
             $runtime = ( ! empty($runtime)) ? strtotime($runtime) : time();
 
-            $content = ArrayHelper::getValue($post, 'content');
+            $content = Arr::get($post, 'content');
 
             if (empty($taskNo)) {
                 throw new \Exception('任务编号不能为空!');
@@ -318,7 +287,7 @@ class TaskData
                 throw new \Exception('任务内容不能为空!');
             }
 
-            $appKey = ArrayHelper::getValue($application, 'app_key');
+            $appKey = Arr::get($application, 'app_key');
             $taskId = md5(sprintf('%s%s', $appKey, $taskNo));
 
             $runing = ($runtime <= time()) ? 1 : 0;
@@ -331,7 +300,7 @@ class TaskData
                 'app_key' => $appKey,
                 'task_no' => $taskNo,
                 'status'  => $runing,
-                'step'    => ArrayHelper::getValue($application, 'step'),
+                'step'    => Arr::get($application, 'step'),
                 'runtime' => $runtime,
                 'content' => $content,
             ];
@@ -361,18 +330,18 @@ class TaskData
                 // 把数据存放到 Redis
                 $data = [
                     'appKey'     => $appKey,
-                    'secretKey'  => ArrayHelper::getValue($application, 'secret_key'),
+                    'secretKey'  => Arr::get($application, 'secret_key'),
                     'taskNo'     => $taskNo,
-                    'linkUrl'    => ArrayHelper::getValue($application, 'link_url'),
-                    'mobile'     => ArrayHelper::getValue($application, 'mobile'),
-                    'email'      => ArrayHelper::getValue($application, 'email'),
-                    'retryTotal' => ArrayHelper::getValue($application, 'retry_total', config('app.retryTotal', 0)),
+                    'linkUrl'    => Arr::get($application, 'link_url'),
+                    'mobile'     => Arr::get($application, 'mobile'),
+                    'email'      => Arr::get($application, 'email'),
+                    'retryTotal' => Arr::get($application, 'retry_total', $this->_retryTotal),
                     'retryNum'   => 0,
-                    'step'       => ArrayHelper::getValue($application, 'step'),
+                    'step'       => Arr::get($application, 'step'),
                     'content'    => $content,
                 ];
 
-                $exists = $this->_redis->hGet(config('app.queue.task'), $taskId);
+                $exists = $this->_redis->hGet(Arr::get($this->_queue, 'task'), $taskId);
 
                 if ( ! empty($exists)) {
                     $exists = json_decode($exists, true);
@@ -381,15 +350,15 @@ class TaskData
                         throw new \Exception('数据解析异常！');
                     }
 
-                    $data['retryNum'] = ArrayHelper::getValue($exists, 'retryNum');
+                    $data['retryNum'] = Arr::get($exists, 'retryNum');
                 }
 
-                $this->_redis->hSet(config('app.queue.task'), $taskId, json_encode($data));
+                $this->_redis->hSet(Arr::get($this->_queue, 'task'), $taskId, json_encode($data));
 
                 if ($delay > 0) { // 延迟任务
-                    $this->_redis->zAdd(config('app.queue.delay'), [$taskId => $runtime]);
+                    $this->_redis->zAdd(Arr::get($this->_queue, 'delay'), [$taskId => $runtime]);
                 } else { // 立即执行
-                    $this->_redis->lPush(config('app.queue.worker'), $taskId);
+                    $this->_redis->lPush(Arr::get($this->_queue, 'worker'), $taskId);
                 }
             }
 
@@ -430,27 +399,90 @@ class TaskData
 
             $application = $this->getApplicationInfo($appKey);
 
-            if (ArrayHelper::getValue($application, 'code') != 200) {
-                throw new \Exception(ArrayHelper::getValue($application, 'message'));
+            if (Arr::get($application, 'code') != 200) {
+                throw new \Exception(Arr::get($application, 'message'));
             }
 
-            $application = ArrayHelper::getValue($application, 'data');
+            $application = Arr::get($application, 'data');
 
             $data = [
-                'appKey'     => ArrayHelper::getValue($result, 'app_key'),
-                'secretKey'  => ArrayHelper::getValue($application, 'secret_key'),
-                'taskNo'     => ArrayHelper::getValue($result, 'task_no'),
-                'linkUrl'    => ArrayHelper::getValue($application, 'link_url'),
-                'mobile'     => ArrayHelper::getValue($application, 'mobile'),
-                'email'      => ArrayHelper::getValue($application, 'email'),
-                'retryTotal' => ArrayHelper::getValue($application, 'retry_total', config('app.retryTotal', 0)),
+                'appKey'     => Arr::get($result, 'app_key'),
+                'secretKey'  => Arr::get($application, 'secret_key'),
+                'taskNo'     => Arr::get($result, 'task_no'),
+                'linkUrl'    => Arr::get($application, 'link_url'),
+                'mobile'     => Arr::get($application, 'mobile'),
+                'email'      => Arr::get($application, 'email'),
+                'retryTotal' => Arr::get($application, 'retry_total', $this->_retryTotal),
                 'retryNum'   => 0,
-                'step'       => ArrayHelper::getValue($result, 'step'),
-                'content'    => ArrayHelper::getValue($result, 'content'),
+                'step'       => Arr::get($result, 'step'),
+                'content'    => Arr::get($result, 'content'),
             ];
 
-            $this->_redis->hSetNx(config('app.queue.task'), $taskId, json_encode($data));
-            $this->_redis->lPush(config('app.queue.worker'), $taskId);
+            $this->_redis->hSetNx(Arr::get($this->_queue, 'task'), $taskId, json_encode($data));
+            $this->_redis->lPush(Arr::get($this->_queue, 'worker'), $taskId);
+
+            $status = ['code' => 200, 'data' => [], 'message' => ''];
+        } catch (\Throwable $e) {
+            $status['message'] = $e->getMessage();
+        }
+
+        return $status;
+    }
+
+    /**
+     * 定时任务
+     *
+     * @access public
+     * @return array
+     */
+    public function scheduled()
+    {
+        $status = ['code' => 0, 'data' => [], 'message' => ''];
+
+        try {
+            $result = $this->_taskDao->findPendingTask();
+
+            if (empty($result)) {
+                throw new \Exception('一小时内没有需要执行的任务!');
+            }
+
+            foreach ($result as $k => $v) {
+                $taskId  = Arr::get($v, 'task_id');
+                $runtime = Arr::get($v, 'runtime');
+                $appKey  = Arr::get($v, 'app_key');
+
+                $application = $this->getApplicationInfo($appKey);
+
+                if (Arr::get($application, 'code') != 200) {
+                    throw new \Exception(Arr::get($application, 'message'));
+                }
+
+                $application = Arr::get($application, 'data');
+
+                $data = [
+                    'appKey'     => $appKey,
+                    'secretKey'  => Arr::get($application, 'secret_key'),
+                    'linkUrl'    => Arr::get($application, 'link_url'),
+                    'mobile'     => Arr::get($application, 'mobile'),
+                    'email'      => Arr::get($application, 'email'),
+                    'retryTotal' => (int)Arr::get($application, 'retry_total', $this->_retryTotal),
+                    'retryNum'   => 0,
+                    'step'       => (int)Arr::get($v, 'step', 0),
+                    'content'    => Arr::get($v, 'content'),
+                ];
+
+                $this->_redis->hSetNx(Arr::get($this->_queue, 'task'), $taskId, json_encode($data));
+                $delay = $runtime - time();
+
+                if ($delay > 0) { // 延迟任务
+                    $this->_redis->zAdd(Arr::get($this->_queue, 'delay'), [$taskId => $runtime]);
+                } else { // 立即执行
+                    $this->_redis->lPush(Arr::get($this->_queue, 'worker'), $taskId);
+                }
+
+                // 更新任务状态为处理中
+                $this->_taskDao->updateTaskStatus($taskId, 1);
+            }
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
         } catch (\Throwable $e) {

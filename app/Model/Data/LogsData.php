@@ -5,10 +5,11 @@ namespace App\Model\Data;
 use App\Model\Dao\LogsDao;
 use App\Model\Dao\TaskDao;
 
+use Swoft\Redis\Pool;
+use Swoft\Stdlib\Helper\Arr;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
-use Swoft\Stdlib\Helper\ArrayHelper;
-use Swoft\Redis\Pool;
+use Swoft\Config\Annotation\Mapping\Config;
 
 /**
  * 日志处理
@@ -18,6 +19,11 @@ use Swoft\Redis\Pool;
  */
 class LogsData
 {
+    /**
+     * @Config("app.queue")
+     */
+    private $_queue;
+
     /**
      * @Inject()
      * @var TaskDao
@@ -47,7 +53,7 @@ class LogsData
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
-            $logs = $this->_redis->lPop(config('app.queue.log'));
+            $logs = $this->_redis->lPop(Arr::get($this->_queue, 'log'));
 
             if (empty($logs)) {
                 throw new \Exception('日志数据不能为空!');
@@ -60,12 +66,12 @@ class LogsData
                     throw new \Exception('数据解析失败!');
                 }
 
-                $taskId = ArrayHelper::getValue($logs, 'taskId');
+                $taskId = Arr::get($logs, 'taskId');
 
                 $data = [
                     'task_id'    => $taskId,
-                    'retry'      => (int)ArrayHelper::getValue($logs, 'retry', 0),
-                    'remark'     => (string)ArrayHelper::getValue($logs, 'remark'),
+                    'retry'      => (int)Arr::get($logs, 'retry', 0),
+                    'remark'     => (string)Arr::get($logs, 'remark'),
                     'created_at' => time(),
                     'updated_at' => 0
                 ];

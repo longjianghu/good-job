@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 use GuzzleHttp\Client;
-use Swoft\Stdlib\Helper\ArrayHelper;
 use GuzzleHttp\Exception\RequestException;
 
 /**

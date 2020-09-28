@@ -5,16 +5,14 @@ namespace App\Http\Controller;
 use App\Model\Data\TaskData;
 use App\Http\Middleware\ApiMiddleware;
 
-use Swoft;
+use Swoft\Stdlib\Helper\Arr;
 use Swoft\Http\Message\Request;
 use Swoft\Bean\Annotation\Mapping\Inject;
+use Swoft\Validator\Annotation\Mapping\Validate;
+use Swoft\Http\Server\Annotation\Mapping\Middleware;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
 use Swoft\Http\Server\Annotation\Mapping\RequestMethod;
-use Swoft\Http\Server\Annotation\Mapping\Middleware;
-use Swoft\Validator\Annotation\Mapping\Validate;
-use Swoft\Stdlib\Helper\ArrayHelper;
-use Throwable;
 
 /**
  * 任务处理
@@ -30,23 +28,12 @@ class TaskController
     private $_taskData;
 
     /**
-     * 首页
-     *
-     * @RequestMapping("index")
-     * @throws Throwable
-     */
-    public function index()
-    {
-        return withJson(['code' => 200, 'data' => [], 'message' => '']);
-    }
-
-    /**
      * 取消任务
      *
      * @RequestMapping("abort",method={RequestMethod::POST})
-     * @Validate(validator="OtherValidator")
+     * @Validate(validator="TaskValidator",fields={"taskId"})
      * @Middleware(ApiMiddleware::class)
-     * @throws Throwable
+     * @return Object
      */
     public function abort(Request $request)
     {
@@ -56,12 +43,15 @@ class TaskController
             $taskId = $request->post('taskId');
             $result = $this->_taskData->abort($taskId);
 
-            if (ArrayHelper::getValue($result, 'code') != 200) {
-                throw new \Exception(ArrayHelper::getValue($result, 'message'));
+            if (Arr::get($result, 'code') != 200) {
+                throw new \Exception(Arr::get($result, 'message'));
             }
 
-            $data   = ArrayHelper::getValue($result, 'data');
-            $status = ['code' => 200, 'data' => formatData($data), 'message' => ''];
+            $status = [
+                'code'    => 200,
+                'data'    => formatData(Arr::get($result, 'data')),
+                'message' => ''
+            ];
         } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
         }
@@ -73,22 +63,26 @@ class TaskController
      * 创建任务
      *
      * @RequestMapping("create",method={RequestMethod::POST})
-     * @Validate(validator="TaskValidator")
-     * @throws Throwable
+     * @Validate(validator="TaskValidator",fields={"appName","step","retryTotal","linkUrl","remark"})
+     * @return Object
      */
     public function create(Request $request)
     {
         $status = ['code' => 500, 'data' => [], 'message' => ''];
 
         try {
-            $result = $this->_taskData->create($request->post());
+            $post   = $request->post();
+            $result = $this->_taskData->create($post);
 
-            if (ArrayHelper::getValue($result, 'code') != 200) {
-                throw new \Exception(ArrayHelper::getValue($result, 'message'));
+            if (Arr::get($result, 'code') != 200) {
+                throw new \Exception(Arr::get($result, 'message'));
             }
 
-            $data   = ArrayHelper::getValue($result, 'data');
-            $status = ['code' => 200, 'data' => formatData($data), 'message' => ''];
+            $status = [
+                'code'    => 200,
+                'data'    => formatData(Arr::get($result, 'data')),
+                'message' => ''
+            ];
         } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
         }
@@ -100,9 +94,9 @@ class TaskController
      * 任务详情
      *
      * @RequestMapping("detail",method={RequestMethod::POST})
-     * @Validate(validator="OtherValidator")
+     * @Validate(validator="TaskValidator",fields={"taskId"})
      * @Middleware(ApiMiddleware::class)
-     * @throws Throwable
+     * @return Object
      */
     public function detail(Request $request)
     {
@@ -112,12 +106,15 @@ class TaskController
             $taskId = $request->post('taskId');
             $result = $this->_taskData->detail($taskId);
 
-            if (ArrayHelper::getValue($result, 'code') != 200) {
-                throw new \Exception(ArrayHelper::getValue($result, 'message'));
+            if (Arr::get($result, 'code') != 200) {
+                throw new \Exception(Arr::get($result, 'message'));
             }
 
-            $data   = ArrayHelper::getValue($result, 'data');
-            $status = ['code' => 200, 'data' => formatData($data), 'message' => ''];
+            $status = [
+                'code'    => 200,
+                'data'    => formatData(Arr::get($result, 'data')),
+                'message' => ''
+            ];
         } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
         }
@@ -131,7 +128,7 @@ class TaskController
      * @RequestMapping("push",method={RequestMethod::POST})
      * @Validate(validator="PushValidator")
      * @Middleware(ApiMiddleware::class)
-     * @throws Throwable
+     * @return Object
      */
     public function push(Request $request)
     {
@@ -141,12 +138,15 @@ class TaskController
             $appKey = $request->getHeaderLine('app-key');
             $result = $this->_taskData->push($appKey, $request->post());
 
-            if (ArrayHelper::getValue($result, 'code') != 200) {
-                throw new \Exception(ArrayHelper::getValue($result, 'message'));
+            if (Arr::get($result, 'code') != 200) {
+                throw new \Exception(Arr::get($result, 'message'));
             }
 
-            $data   = ArrayHelper::getValue($result, 'data');
-            $status = ['code' => 200, 'data' => formatData($data), 'message' => ''];
+            $status = [
+                'code'    => 200,
+                'data'    => formatData(Arr::get($result, 'data')),
+                'message' => ''
+            ];
         } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
         }
@@ -158,9 +158,9 @@ class TaskController
      * 任务重试
      *
      * @RequestMapping("retry",method={RequestMethod::POST})
-     * @Validate(validator="OtherValidator")
+     * @Validate(validator="TaskValidator",fields={"taskId"})
      * @Middleware(ApiMiddleware::class)
-     * @throws Throwable
+     * @return Object
      */
     public function retry(Request $request)
     {
@@ -172,12 +172,15 @@ class TaskController
 
             $result = $this->_taskData->retry($appKey, $taskId);
 
-            if (ArrayHelper::getValue($result, 'code') != 200) {
-                throw new \Exception(ArrayHelper::getValue($result, 'message'));
+            if (Arr::get($result, 'code') != 200) {
+                throw new \Exception(Arr::get($result, 'message'));
             }
 
-            $data   = ArrayHelper::getValue($result, 'data');
-            $status = ['code' => 200, 'data' => formatData($data), 'message' => ''];
+            $status = [
+                'code'    => 200,
+                'data'    => formatData(Arr::get($result, 'data')),
+                'message' => ''
+            ];
         } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
         }

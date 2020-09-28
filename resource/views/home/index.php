@@ -412,7 +412,7 @@ Array
 </pre>
     <p>提交的内容加上头部信息的参数(signature除外)按键名从a->z进行排序并组装成一个字符串。<?php echo htmlspecialchars('app-key=4098668690234486&content=aabb&nonce-str=abc123&runtime=2019-09-13
         11:08:00&taskNo=a1&timestamp=2019-09-13 10:13:00&version=1.0'); ?></p>
-    <p>使用md5(md5(待加密字符串).分配密钥)进行加密即可得到签名字符串:1dcfd23cc2f9a42ce5c9437aa21e7d1c。</p>
+    <p>使用md5(待加密字符串.分配密钥)进行加密即可得到签名字符串。</p>
 </section>
 </body>
 </html>

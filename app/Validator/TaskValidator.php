@@ -11,7 +11,7 @@ use Swoft\Validator\Annotation\Mapping\Required;
 use Swoft\Validator\Annotation\Mapping\Validator;
 
 /**
- * 创建任务
+ * 任务验证器
  *
  * @package App\Validator
  * @Validator(name="TaskValidator")
@@ -63,4 +63,13 @@ class TaskValidator
      * @var string
      */
     protected $remark = '';
+
+    /**
+     * 任务ID
+     *
+     * @NotEmpty(message="taskId.NotEmpty")
+     * @IsString(message="taskId.IsString")
+     * @Required()
+     */
+    protected $taskId;
 }
