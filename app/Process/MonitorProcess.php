@@ -37,8 +37,10 @@ class MonitorProcess extends UserProcess
     public function run(Process $process): void
     {
         while (true) {
-            $this->_taskLogic->worker();
-            $this->_logsData->monitor();
+            sgo(function () {
+                $this->_taskLogic->worker();
+                $this->_logsData->monitor();
+            });
 
             Coroutine::sleep(1);
         }

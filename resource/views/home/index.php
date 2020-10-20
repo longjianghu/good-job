@@ -73,7 +73,7 @@
     </table>
     <h4>返回示例</h4>
     <p style="color: red;">
-        系统将使用POST方法将数据{data:xxxx}提交到接口地址,接口返回sucess字符串表示执行成功,其它内容GoodJob会执行重试操作！在提交数据的同时系统会使用下面接口鉴权的方法提交头部信息，以便于接入端校验请求是否来源于GoodJob。</p>
+        系统将使用POST方法将数据{data:xxxx}提交到接口地址,接口返回success字符串表示执行成功,其它内容GoodJob会执行重试操作！在提交数据的同时系统会使用下面接口鉴权的方法提交头部信息，以便于接入端校验请求是否来源于GoodJob。</p>
     <p>appKey:分配的应用KEY, secretKey:分配的应用密钥</p>
     <pre>
 {
