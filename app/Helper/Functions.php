@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 
 /**
  * 数据格式化
@@ -96,37 +95,44 @@ if ( ! function_exists('random')) {
 }
 
 /**
- * 发送请求
+ * 发送请求(表单提交)
  *
  * @access public
  * @param string $url     URL
- * @param array  $args    提交参数
+ * @param mixed  $args    提交参数
  * @param array  $headers HEAD信息
- * @param string $method  提交方法
+ * @param string $method  请求方法
  * @return array
- * @throws
  */
-if ( ! function_exists('send')) {
-    function send(string $url, array $args = [], array $headers = [], string $method = 'POST')
+if ( ! function_exists('sendRequest')) {
+    function sendRequest(string $url, $args = [], array $headers = [], string $method = 'GET')
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
-            $options = ( ! empty($args)) ? ['form_params' => $args] : [];
+            $options = [];
+            $method  = ( ! empty($method)) ? $method : null;
+
+            if ( ! empty($args)) {
+                if (strtoupper($method) == 'POST') {
+                    $options = (is_array($args)) ? ['form_params' => $args] : ['body' => \GuzzleHttp\Psr7\stream_for($args)];
+                } else {
+                    $options = ['query' => $args];
+                }
+            }
 
             if ( ! empty($headers)) {
                 $options['headers'] = $headers;
             }
 
-            $response = (new Client())->request($method, $url, $options);
-            $content  = $response->getBody()->getContents();
+            $response = (new Client(['verify' => false]))->request($method, $url, $options);
 
-            if (empty($content)) {
-                throw new \Exception('没有返回相关数据！');
-            }
-
-            $status = ['code' => 200, 'data' => $content, 'message' => ''];
-        } catch (RequestException $e) {
+            $status = [
+                'code'    => 200,
+                'data'    => $response->getBody()->getContents(),
+                'message' => ''
+            ];
+        } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
         }
 

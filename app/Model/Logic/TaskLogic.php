@@ -114,7 +114,7 @@ class TaskLogic
                 $header['signature'] = md5($str.$secretKey);
 
                 // 发送请求
-                $query = send($linkUrl, $data, $header);
+                $query = sendRequest($linkUrl, $data, $header, 'POST');
                 $data  = (Arr::get($query, 'code') == 200) ? Arr::get($query, 'data') : 'API接口异常,数据请求失败!';
 
                 if (strtolower($data) != 'success') {
