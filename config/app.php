@@ -8,6 +8,5 @@ return [
         'log'    => 'log', // 日志队列
         'task'   => 'task', // 任务详情
         'delay'  => 'delay', // 延迟队列
-        'notify' => 'notify', // 预警提醒
     ], // 消息队列
 ];
