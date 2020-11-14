@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
+use App\Process\MonitorProcess;
+
 use Swoft\Db\Pool;
 use Swoft\Db\Database;
 use Swoft\Redis\RedisDb;
 use Swoft\Server\SwooleEvent;
-use App\Process\MonitorProcess;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Log\Handler\FileHandler;
 use Swoft\Task\Swoole\TaskListener;
@@ -17,12 +18,12 @@ return [
         'port'     => 18306,
         'listener' => [],
         'process'  => [
-            'crontab' => bean(CrontabProcess::class),
-            'monitor' => bean(MonitorProcess::class)
+            'crontab' => \bean(CrontabProcess::class),
+            'monitor' => \bean(MonitorProcess::class)
         ],
         'on'       => [
-            SwooleEvent::TASK   => bean(TaskListener::class),
-            SwooleEvent::FINISH => bean(FinishListener::class)
+            SwooleEvent::TASK   => \bean(TaskListener::class),
+            SwooleEvent::FINISH => \bean(FinishListener::class)
         ],
         'setting'  => [
             'worker_num'            => env('WORKER_NUM', 3),
