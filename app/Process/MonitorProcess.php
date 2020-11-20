@@ -5,7 +5,7 @@ namespace App\Process;
 use App\Model\Data\LogsData;
 use App\Model\Logic\TaskLogic;
 
-use Swoole\Coroutine;
+use Swoft\Co;
 use Swoft\Process\Process;
 use Swoft\Process\UserProcess;
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -36,13 +36,15 @@ class MonitorProcess extends UserProcess
      */
     public function run(Process $process): void
     {
+        $cpuNum = swoole_cpu_num();
+
         while (true) {
-            sgo(function () {
+            for ($i = 0; $i < $cpuNum; $i++) {
                 $this->_taskLogic->worker();
                 $this->_logsData->monitor();
-            });
+            }
 
-            Coroutine::sleep(1);
+            Co::sleep(1);
         }
     }
 }

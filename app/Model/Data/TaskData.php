@@ -25,9 +25,19 @@ class TaskData
     const POOL = 'dbJobPool';
 
     /**
-     * @Config("app.queue")
+     * @Config("app.queue.delay")
      */
-    private $_queue = [];
+    private $_delayQueue;
+
+    /**
+     * @Config("app.queue.task")
+     */
+    private $_taskQueue;
+
+    /**
+     * @Config("app.queue.worker")
+     */
+    private $_workerQueue;
 
     /**
      * @Config("app.retryTotal")
@@ -339,7 +349,7 @@ class TaskData
                     'content'    => $content,
                 ];
 
-                $exists = $this->_redis->hGet(Arr::get($this->_queue, 'task'), $taskId);
+                $exists = $this->_redis->hGet($this->_taskQueue, $taskId);
 
                 if ( ! empty($exists)) {
                     $exists = json_decode($exists, true);
@@ -351,12 +361,12 @@ class TaskData
                     $data['retryNum'] = Arr::get($exists, 'retryNum');
                 }
 
-                $this->_redis->hSet(Arr::get($this->_queue, 'task'), $taskId, json_encode($data));
+                $this->_redis->hSet($this->_taskQueue, $taskId, json_encode($data));
 
                 if ($delay > 0) { // 延迟任务
-                    $this->_redis->zAdd(Arr::get($this->_queue, 'delay'), [$taskId => $runtime]);
+                    $this->_redis->zAdd($this->_delayQueue, [$taskId => $runtime]);
                 } else { // 立即执行
-                    $this->_redis->lPush(Arr::get($this->_queue, 'worker'), $taskId);
+                    $this->_redis->lPush($this->_workerQueue, $taskId);
                 }
             }
 
@@ -416,8 +426,8 @@ class TaskData
                 'content'    => Arr::get($result, 'content'),
             ];
 
-            $this->_redis->hSetNx(Arr::get($this->_queue, 'task'), $taskId, json_encode($data));
-            $this->_redis->lPush(Arr::get($this->_queue, 'worker'), $taskId);
+            $this->_redis->hSetNx($this->_taskQueue, $taskId, json_encode($data));
+            $this->_redis->lPush($this->_workerQueue, $taskId);
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
         } catch (\Throwable $e) {
@@ -469,13 +479,13 @@ class TaskData
                     'content'    => Arr::get($v, 'content'),
                 ];
 
-                $this->_redis->hSetNx(Arr::get($this->_queue, 'task'), $taskId, json_encode($data));
+                $this->_redis->hSetNx($this->_taskQueue, $taskId, json_encode($data));
                 $delay = $runtime - time();
 
                 if ($delay > 0) { // 延迟任务
-                    $this->_redis->zAdd(Arr::get($this->_queue, 'delay'), [$taskId => $runtime]);
+                    $this->_redis->zAdd($this->_delayQueue, [$taskId => $runtime]);
                 } else { // 立即执行
-                    $this->_redis->lPush(Arr::get($this->_queue, 'worker'), $taskId);
+                    $this->_redis->lPush($this->_workerQueue, $taskId);
                 }
 
                 // 更新任务状态为处理中

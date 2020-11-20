@@ -20,9 +20,9 @@ use Swoft\Config\Annotation\Mapping\Config;
 class LogsData
 {
     /**
-     * @Config("app.queue")
+     * @Config("app.queue.log")
      */
-    private $_queue;
+    private $_logQueue;
 
     /**
      * @Inject()
@@ -53,7 +53,7 @@ class LogsData
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
-            $logs = $this->_redis->lPop(Arr::get($this->_queue, 'log'));
+            $logs = $this->_redis->lPop($this->_logQueue);
 
             if (empty($logs)) {
                 throw new \Exception('日志数据不能为空!');
