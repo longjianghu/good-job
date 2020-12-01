@@ -33,7 +33,7 @@ systemctl start docker
 > 请根据你的实际路径进行调整
 
 ```
-docker run --name good.job -p 8083:18306 -v /data/var/etc/good-job.cnf:/data/.env --restart=always -d longjianghu/good-job:1.0.0
+docker run --name good.job -p 8083:18306 -v /data/var/etc/good-job.cnf:/data/.env --restart=always -d longjianghu/good-job:latest
 ```
 
 > 请使用 .env.example 生成本地的配置文件。
