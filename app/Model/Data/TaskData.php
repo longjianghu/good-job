@@ -2,9 +2,10 @@
 
 namespace App\Model\Data;
 
-use App\Model\Dao\AbortDao;
+use App\Utils\SnowFlake;
 use App\Model\Dao\LogsDao;
 use App\Model\Dao\TaskDao;
+use App\Model\Dao\AbortDao;
 use App\Model\Dao\ApplicationDao;
 
 use Swoft\Db\DB;
@@ -298,39 +299,25 @@ class TaskData
             }
 
             $appKey = Arr::get($application, 'app_key');
-            $taskId = md5(sprintf('%s%s', $appKey, $taskNo));
+            $taskId = (string)SnowFlake::make();
 
             $runing = ($runtime <= time()) ? 1 : 0;
 
-            // 检测任务是否已经存在
-            $task = $this->_taskDao->findByTaskId($taskId);
-
             $data = [
-                'task_id' => $taskId,
-                'app_key' => $appKey,
-                'task_no' => $taskNo,
-                'status'  => $runing,
-                'step'    => Arr::get($application, 'step'),
-                'runtime' => $runtime,
-                'content' => $content,
+                'task_id'    => $taskId,
+                'app_key'    => $appKey,
+                'task_no'    => $taskNo,
+                'status'     => $runing,
+                'step'       => Arr::get($application, 'step'),
+                'runtime'    => $runtime,
+                'content'    => $content,
+                'created_at' => time()
             ];
 
-            if (empty($task)) {
-                $data['created_at'] = time();
+            $query = $this->_taskDao->create($data);
 
-                $query = $this->_taskDao->create($data);
-
-                if (empty($query)) {
-                    throw new \Exception('任务记录写入失败!');
-                }
-            } else {
-                $data['updated_at'] = time();
-
-                $query = $this->_taskDao->updateByTaskId($taskId, $data);
-
-                if (empty($query)) {
-                    throw new \Exception('任务记录更新失败!');
-                }
+            if (empty($query)) {
+                throw new \Exception('任务记录写入失败!');
             }
 
             $delay = $runtime - time();
@@ -370,7 +357,11 @@ class TaskData
                 }
             }
 
-            $status = ['code' => 200, 'data' => ['taskId' => $taskId], 'message' => ''];
+            $status = [
+                'code'    => 200,
+                'data'    => ['taskId' => $taskId],
+                'message' => ''
+            ];
         } catch (\Throwable $e) {
             $status['message'] = $e->getMessage();
         }

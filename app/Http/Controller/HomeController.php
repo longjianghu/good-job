@@ -2,14 +2,15 @@
 
 namespace App\Http\Controller;
 
+use Throwable;
+
 use Swoft;
+use Swoft\View\Renderer;
 use Swoft\Context\Context;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
-use Swoft\View\Renderer;
-use Throwable;
 
 /**
  * Class HomeController

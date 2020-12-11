@@ -2,10 +2,10 @@
 
 namespace App\Model\Logic;
 
-use App\Model\Dao\AbortDao;
-
 use App\Model\Dao\LogsDao;
 use App\Model\Dao\TaskDao;
+use App\Model\Dao\AbortDao;
+
 use Swoft\Redis\Pool;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Bean\Annotation\Mapping\Bean;
