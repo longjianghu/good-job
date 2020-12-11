@@ -2,11 +2,10 @@
 
 namespace App\Exception\Handler;
 
-use Swoft\Error\Annotation\Mapping\ExceptionHandler;
-use Swoft\Http\Message\Response;
-use Swoft\Http\Server\Exception\Handler\AbstractHttpErrorHandler;
-use Swoft\Log\Helper\CLog;
 use Throwable;
+use Swoft\Http\Message\Response;
+use Swoft\Error\Annotation\Mapping\ExceptionHandler;
+use Swoft\Http\Server\Exception\Handler\AbstractHttpErrorHandler;
 
 /**
  * HttpExceptionHandler

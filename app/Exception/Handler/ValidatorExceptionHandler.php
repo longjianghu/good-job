@@ -2,12 +2,11 @@
 
 namespace App\Exception\Handler;
 
+use Throwable;
+use Swoft\Http\Message\Response;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Error\Annotation\Mapping\ExceptionHandler;
-use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Exception\Handler\AbstractHttpErrorHandler;
-use Swoft\Log\Helper\CLog;
-use Throwable;
 
 /**
  * ValidatorExceptionHandler

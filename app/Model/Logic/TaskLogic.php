@@ -4,6 +4,8 @@ namespace App\Model\Logic;
 
 use App\Model\Dao\AbortDao;
 
+use App\Model\Dao\LogsDao;
+use App\Model\Dao\TaskDao;
 use Swoft\Redis\Pool;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -43,6 +45,18 @@ class TaskLogic
      * @var AbortDao
      */
     private $_abortDao;
+
+    /**
+     * @Inject()
+     * @var TaskDao
+     */
+    private $_taskDao;
+
+    /**
+     * @Inject()
+     * @var LogsDao
+     */
+    private $_logsDao;
 
     /**
      * @Inject("redisPool")
@@ -90,7 +104,13 @@ class TaskLogic
                 $retryNum   = (int)Arr::get($task, 'retryNum');
                 $retryTotal = (int)Arr::get($task, 'retryTotal');
 
-                $logs  = ['taskId' => $taskId, 'retry' => $retryNum, 'remark' => '任务执行成功!', 'created_at' => time()];
+                $logs = [
+                    'taskId'     => $taskId,
+                    'retry'      => $retryNum,
+                    'remark'     => '任务执行成功!',
+                    'created_at' => time()
+                ];
+
                 $abort = $this->_redis->get($taskId);
 
                 // 是否删除任务数据
@@ -162,9 +182,20 @@ class TaskLogic
                 // 任务执行成功删除任务
                 if ( ! empty($remove)) {
                     $this->_redis->hDel($this->_taskQueue, $taskId);
+
+                    $query = $this->_taskDao->updateTaskStatus($taskId, 2);
+
+                    if (empty($query)) {
+                        throw new \Exception('任务状态更新失败!');
+                    }
                 }
 
-                $this->_redis->lPush($this->_logQueue, json_encode($logs));
+                // 添加日志
+                $query = $this->_logsDao->create($logs);
+
+                if (empty($query)) {
+                    throw new \Exception('日志添加失败!');
+                }
             });
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];

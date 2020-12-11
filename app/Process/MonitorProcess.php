@@ -2,7 +2,6 @@
 
 namespace App\Process;
 
-use App\Model\Data\LogsData;
 use App\Model\Logic\TaskLogic;
 
 use Swoft\Co;
@@ -26,12 +25,6 @@ class MonitorProcess extends UserProcess
     private $_taskLogic;
 
     /**
-     * @Inject()
-     * @var LogsData
-     */
-    private $_logsData;
-
-    /**
      * @param Process $process
      */
     public function run(Process $process): void
@@ -41,7 +34,6 @@ class MonitorProcess extends UserProcess
         while (true) {
             for ($i = 0; $i < $cpuNum; $i++) {
                 $this->_taskLogic->worker();
-                $this->_logsData->monitor();
             }
 
             Co::sleep(1);
