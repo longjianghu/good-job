@@ -105,7 +105,7 @@ class TaskLogic
                 $retryTotal = (int)Arr::get($task, 'retryTotal');
 
                 $logs = [
-                    'taskId'     => $taskId,
+                    'task_id'    => $taskId,
                     'retry'      => $retryNum,
                     'remark'     => '任务执行成功!',
                     'created_at' => time()
