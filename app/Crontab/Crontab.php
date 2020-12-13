@@ -21,12 +21,12 @@ class Crontab
     /**
      * @Config("app.queue.delay")
      */
-    private $_delay;
+    private $_delayQueue;
 
     /**
      * @Config("app.queue.retry")
      */
-    private $_retry;
+    private $_retryQueue;
 
     /**
      * @Inject()
@@ -47,8 +47,8 @@ class Crontab
      */
     public function monitor()
     {
-        $this->_taskLogic->watch($this->_delay);
-        $this->_taskLogic->watch($this->_retry);
+        $this->_taskLogic->watch($this->_delayQueue);
+        $this->_taskLogic->watch($this->_retryQueue);
     }
 
     /**

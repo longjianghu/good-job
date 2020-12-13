@@ -2,7 +2,6 @@
 
 namespace App\Model\Data;
 
-use App\Utils\SnowFlake;
 use App\Model\Dao\LogsDao;
 use App\Model\Dao\TaskDao;
 use App\Model\Dao\AbortDao;
@@ -93,7 +92,7 @@ class TaskData
                 throw new \Exception('任务ID不能为空!');
             }
 
-            $result = $this->_taskDao->findByTaskId($taskId);
+            $result = $this->_taskDao->findById($taskId);
 
             if (empty($result)) {
                 throw new \Exception('任务信息获取失败!');
@@ -213,7 +212,7 @@ class TaskData
                 throw new \Exception('任务ID不能为空!');
             }
 
-            $result = $this->_taskDao->findByTaskId($taskId);
+            $result = $this->_taskDao->findById($taskId);
 
             if (empty($result)) {
                 throw new \Exception('没有找到相任务记录!');
@@ -299,12 +298,9 @@ class TaskData
             }
 
             $appKey = Arr::get($application, 'app_key');
-            $taskId = (string)SnowFlake::make();
-
             $runing = ($runtime <= time()) ? 1 : 0;
 
             $data = [
-                'task_id'    => $taskId,
                 'app_key'    => $appKey,
                 'task_no'    => $taskNo,
                 'status'     => $runing,
@@ -314,9 +310,9 @@ class TaskData
                 'created_at' => time()
             ];
 
-            $query = $this->_taskDao->create($data);
+            $taskId = (string)$this->_taskDao->create($data);
 
-            if (empty($query)) {
+            if (empty($taskId)) {
                 throw new \Exception('任务记录写入失败!');
             }
 
@@ -390,7 +386,7 @@ class TaskData
                 throw new \Exception('任务ID不能为空!');
             }
 
-            $result = $this->_taskDao->findByTaskId($taskId);
+            $result = $this->_taskDao->findById($taskId);
 
             if (empty($result)) {
                 throw new \Exception('任务ID输入有误!');
