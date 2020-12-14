@@ -81,7 +81,8 @@ class TaskLogic
                 throw new \Exception('没有需要执行的任务!');
             }
 
-            $task = $this->_redis->hGet($this->_taskQueue, $taskId);
+            $taskId = (string)$taskId;
+            $task   = $this->_redis->hGet($this->_taskQueue, $taskId);
 
             if (empty($task)) {
                 throw new \Exception('任务信息获取失败!');
