@@ -442,7 +442,7 @@ class TaskData
             }
 
             foreach ($result as $k => $v) {
-                $taskId  = Arr::get($v, 'task_id');
+                $taskId  = (string)Arr::get($v, 'id');
                 $runtime = Arr::get($v, 'runtime');
                 $appKey  = Arr::get($v, 'app_key');
 
