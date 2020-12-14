@@ -39,7 +39,7 @@ class TaskLogic
      * @Inject()
      * @var TaskAbortDao
      */
-    private $_abortDao;
+    private $_taskAbortDao;
 
     /**
      * @Inject()
@@ -115,7 +115,7 @@ class TaskLogic
                 if ( ! empty($abort)) { // 系统拦截
                     $logs['remark'] = '系统拦截';
 
-                    $this->_abortDao->updateTaskStatus($taskId, 1);
+                    $this->_taskAbortDao->updateTaskStatus($taskId, 1);
                 } else { // 未被拦截
                     $header = [
                         'app-key'   => $appKey,
