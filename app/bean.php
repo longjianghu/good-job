@@ -87,8 +87,8 @@ return [
     'redisPool'          => [
         'class'       => \Swoft\Redis\Pool::class,
         'redisDb'     => \bean('redis'),
-        'minActive'   => 5,
-        'maxActive'   => 10,
+        'minActive'   => 1,
+        'maxActive'   => 20,
         'maxWait'     => 3,
         'maxWaitTime' => 3,
         'maxIdleTime' => 60,

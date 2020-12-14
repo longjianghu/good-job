@@ -36,7 +36,7 @@ class MonitorProcess extends UserProcess
                 $this->_taskLogic->worker();
             }
 
-            Co::sleep(0.1);
+            Co::sleep(1);
         }
     }
 }
