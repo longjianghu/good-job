@@ -457,11 +457,10 @@ class TaskData
                 $data = [
                     'appKey'     => $appKey,
                     'secretKey'  => Arr::get($application, 'secret_key'),
-                    'linkUrl'    => Arr::get($application, 'link_url'),
-                    'mobile'     => Arr::get($application, 'mobile'),
-                    'email'      => Arr::get($application, 'email'),
-                    'retryTotal' => (int)Arr::get($application, 'retry_total', $this->_retryTotal),
+                    'taskNo'     => Arr::get($v, 'task_no'),
+                    'linkUrl'    => Arr::get($application, 'email'),
                     'retryNum'   => 0,
+                    'retryTotal' => (int)Arr::get($application, 'retry_total', $this->_retryTotal),
                     'step'       => (int)Arr::get($v, 'step', 0),
                     'content'    => Arr::get($v, 'content'),
                 ];
