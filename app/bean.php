@@ -26,7 +26,7 @@ return [
             SwooleEvent::FINISH => \bean(FinishListener::class)
         ],
         'setting'  => [
-            'worker_num'            => env('WORKER_NUM', 3),
+            'worker_num'            => swoole_cpu_num(),
             'dispatch_mode'         => 3,
             'task_enable_coroutine' => true
         ]
