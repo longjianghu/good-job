@@ -458,7 +458,7 @@ class TaskData
                     'appKey'     => $appKey,
                     'secretKey'  => Arr::get($application, 'secret_key'),
                     'taskNo'     => Arr::get($v, 'task_no'),
-                    'linkUrl'    => Arr::get($application, 'email'),
+                    'linkUrl'    => Arr::get($application, 'link_url'),
                     'retryNum'   => 0,
                     'retryTotal' => (int)Arr::get($application, 'retry_total', $this->_retryTotal),
                     'step'       => (int)Arr::get($v, 'step', 0),
