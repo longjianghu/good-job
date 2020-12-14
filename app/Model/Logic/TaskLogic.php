@@ -2,9 +2,9 @@
 
 namespace App\Model\Logic;
 
-use App\Model\Dao\LogsDao;
 use App\Model\Dao\TaskDao;
-use App\Model\Dao\AbortDao;
+use App\Model\Dao\TaskLogDao;
+use App\Model\Dao\TaskAbortDao;
 
 use Swoft\Redis\Pool;
 use Swoft\Stdlib\Helper\Arr;
@@ -20,11 +20,6 @@ use Swoft\Config\Annotation\Mapping\Config;
  */
 class TaskLogic
 {
-    /**
-     * @Config("app.queue.log")
-     */
-    private $_logQueue;
-
     /**
      * @Config("app.queue.retry")
      */
@@ -42,7 +37,7 @@ class TaskLogic
 
     /**
      * @Inject()
-     * @var AbortDao
+     * @var TaskAbortDao
      */
     private $_abortDao;
 
@@ -54,9 +49,9 @@ class TaskLogic
 
     /**
      * @Inject()
-     * @var LogsDao
+     * @var TaskLogDao
      */
-    private $_logsDao;
+    private $_taskLogDao;
 
     /**
      * @Inject("redisPool")
@@ -192,7 +187,7 @@ class TaskLogic
                 }
 
                 // 添加日志
-                $query = $this->_logsDao->create($logs);
+                $query = $this->_taskLogDao->create($logs);
 
                 if (empty($query)) {
                     throw new \Exception('日志添加失败!');

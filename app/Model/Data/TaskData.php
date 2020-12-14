@@ -2,9 +2,9 @@
 
 namespace App\Model\Data;
 
-use App\Model\Dao\LogsDao;
 use App\Model\Dao\TaskDao;
-use App\Model\Dao\AbortDao;
+use App\Model\Dao\TaskLogDao;
+use App\Model\Dao\TaskAbortDao;
 use App\Model\Dao\ApplicationDao;
 
 use Swoft\Db\DB;
@@ -46,9 +46,9 @@ class TaskData
 
     /**
      * @Inject()
-     * @var AbortDao
+     * @var TaskAbortDao
      */
-    private $_abortDao;
+    private $_taskAbortDao;
 
     /**
      * @Inject()
@@ -58,9 +58,9 @@ class TaskData
 
     /**
      * @Inject()
-     * @var LogsDao
+     * @var TaskLogDao
      */
-    private $_logsDao;
+    private $_taskLogDao;
 
     /**
      * @Inject()
@@ -129,7 +129,7 @@ class TaskData
                 'updated_at' => 0
             ];
 
-            $query = $this->_abortDao->create($data);
+            $query = $this->_taskAbortDao->create($data);
 
             if (empty($query)) {
                 throw new \Exception('拦截任务添加失败!');
@@ -218,7 +218,7 @@ class TaskData
                 throw new \Exception('没有找到相任务记录!');
             }
 
-            $logs = $this->_logsDao->findAllByTaskId($taskId);
+            $logs = $this->_taskLogDao->findAllByTaskId($taskId);
 
             $data = [
                 'taskId'    => Arr::get($result, 'task_id'),

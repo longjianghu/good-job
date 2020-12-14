@@ -11,9 +11,9 @@ use Swoft\Bean\Annotation\Mapping\Bean;
  * @package App\Model\Dao
  * @Bean()
  */
-class AbortDao
+class TaskAbortDao
 {
-    const TABLE = 'abort';
+    const TABLE = 'task_abort';
     const POOL  = 'dbJobPool';
 
     /**

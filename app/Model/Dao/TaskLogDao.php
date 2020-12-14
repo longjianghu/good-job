@@ -11,9 +11,9 @@ use Swoft\Bean\Annotation\Mapping\Bean;
  * @package App\Model\Dao
  * @Bean()
  */
-class LogsDao
+class TaskLogDao
 {
-    const TABLE = 'logs';
+    const TABLE = 'task_log';
     const POOL  = 'dbJobPool';
 
     /**

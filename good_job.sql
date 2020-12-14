@@ -20,8 +20,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 -- Table structure for abort
 -- ----------------------------
-DROP TABLE IF EXISTS `abort`;
-CREATE TABLE `abort` (
+DROP TABLE IF EXISTS `task_abort`;
+CREATE TABLE `task_abort` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除',
   `task_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '任务ID',
@@ -29,7 +29,7 @@ CREATE TABLE `abort` (
   `created_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  KEY `task_id` (`task_id`)
+  KEY `idx_task_id` (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='拦截记录';
 
 -- ----------------------------
@@ -55,7 +55,7 @@ CREATE TABLE `application` (
   `created_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `app_key` (`app_key`)
+  UNIQUE KEY `uq_app_key` (`app_key`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='工作任务';
 
 -- ----------------------------
@@ -68,8 +68,8 @@ COMMIT;
 -- ----------------------------
 -- Table structure for logs
 -- ----------------------------
-DROP TABLE IF EXISTS `logs`;
-CREATE TABLE `logs` (
+DROP TABLE IF EXISTS `task_log`;
+CREATE TABLE `task_log` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除',
   `task_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '任务ID',
@@ -78,7 +78,7 @@ CREATE TABLE `logs` (
   `created_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  KEY `task_id` (`task_id`)
+  KEY `idx_task_id` (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='系统日志';
 
 -- ----------------------------
@@ -103,8 +103,8 @@ CREATE TABLE `task` (
   `created_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  KEY `task_no` (`app_key`,`task_no`),
-  KEY `is_deleted` (`is_deleted`,`status`,`runtime`)
+  KEY `idx_task_no` (`app_key`,`task_no`),
+  KEY `idx_is_deleted` (`is_deleted`,`status`,`runtime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='任务列表';
 
 -- ----------------------------
