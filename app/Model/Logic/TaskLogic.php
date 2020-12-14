@@ -222,7 +222,10 @@ class TaskLogic
                 throw new \Exception('任务队列名称不能为空!');
             }
 
-            $taskIds = $this->_redis->zRangeByScore($queueName, (string)0, (string)time());
+            $start = (string)0;
+            $end   = (string)time();
+
+            $taskIds = $this->_redis->zRangeByScore($queueName, $start, $end);
 
             if (empty($taskIds)) {
                 throw new \Exception('没有待执行的任务!');
@@ -231,6 +234,9 @@ class TaskLogic
             foreach ($taskIds as $k => $v) {
                 $this->_redis->lPush($this->_workerQueue, $v);
             }
+
+            // 移除对应的任务
+            $this->_redis->zRemRangeByScore($queueName, $start, $end);
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
         } catch (\Throwable $e) {
