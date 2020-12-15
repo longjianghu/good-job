@@ -6,9 +6,10 @@ use App\Model\Logic\TaskLogic;
 
 use Swoft\Co;
 use Swoole\Process\Pool;
-use Swoft\Process\Annotation\Mapping\Process;
-use Swoft\Process\Contract\ProcessInterface;
 use Swoft\Bean\Annotation\Mapping\Inject;
+use Swoft\Config\Annotation\Mapping\Config;
+use Swoft\Process\Contract\ProcessInterface;
+use Swoft\Process\Annotation\Mapping\Process;
 
 /**
  * WorkerProcess
@@ -18,6 +19,11 @@ use Swoft\Bean\Annotation\Mapping\Inject;
  */
 class WorkerProcess implements ProcessInterface
 {
+    /**
+     * @Config("app.minWorkerNum")
+     */
+    private $_workerNum;
+
     /**
      * @Inject()
      * @var TaskLogic
@@ -31,7 +37,9 @@ class WorkerProcess implements ProcessInterface
     public function run(Pool $pool, int $workerId): void
     {
         while (true) {
-            $this->_taskLogic->worker();
+            for ($i = 0; $i < $this->_workerNum; $i++) {
+                $this->_taskLogic->worker();
+            }
 
             Co::sleep(1);
         }

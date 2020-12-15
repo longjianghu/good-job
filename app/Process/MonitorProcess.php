@@ -9,6 +9,7 @@ use Swoft\Process\Process;
 use Swoft\Process\UserProcess;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
+use Swoft\Config\Annotation\Mapping\Config;
 
 /**
  * MonitorProcess
@@ -18,6 +19,11 @@ use Swoft\Bean\Annotation\Mapping\Inject;
  */
 class MonitorProcess extends UserProcess
 {
+    /**
+     * @Config("app.minWorkerNum")
+     */
+    private $_workerNum;
+
     /**
      * @Inject()
      * @var TaskLogic
@@ -30,7 +36,9 @@ class MonitorProcess extends UserProcess
     public function run(Process $process): void
     {
         while (true) {
-            $this->_taskLogic->worker();
+            for ($i = 0; $i < $this->_workerNum; $i++) {
+                $this->_taskLogic->worker();
+            }
 
             Co::sleep(1);
         }

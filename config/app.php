@@ -3,6 +3,7 @@
 return [
     'minWorkerNum' => swoole_cpu_num(), // 最小 Worker 数量
     'maxWorkerNum' => swoole_cpu_num() * 4, // 最大 Worker 数量
+    'limitNum'     => 200, // 定时任务投递任务数量
     'retryTotal'   => env('RETRY_TOTAL', 3), // 重试次数
     'queue'        => [
         'worker' => 'worker', // 任务队列

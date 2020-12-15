@@ -45,6 +45,11 @@ class TaskData
     private $_retryTotal = 0;
 
     /**
+     * @Config("app.limitNum")
+     */
+    private $_limitNum = 100;
+
+    /**
      * @Inject()
      * @var TaskAbortDao
      */
@@ -435,7 +440,8 @@ class TaskData
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
-            $result = $this->_taskDao->findPendingTask();
+            $limit  = (int)$this->_limitNum;
+            $result = $this->_taskDao->findPendingTask($limit);
 
             if (empty($result)) {
                 throw new \Exception('一小时内没有需要执行的任务!');

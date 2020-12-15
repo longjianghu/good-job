@@ -44,9 +44,10 @@ class TaskDao
      * 查询待执行的任务
      *
      * @access public
+     * @param int $limit 记录数
      * @return array
      */
-    public function findPendingTask()
+    public function findPendingTask(int $limit = 100)
     {
         $where = [
             'is_deleted' => 0,
@@ -54,7 +55,7 @@ class TaskDao
             ['runtime', '<=', time()]
         ];
 
-        return Db::query(self::POOL)->from(self::TABLE)->where($where)->orderBy('id', 'desc')->limit(100)->get();
+        return Db::query(self::POOL)->from(self::TABLE)->where($where)->orderBy('id', 'desc')->limit($limit)->get();
     }
 
     /**
