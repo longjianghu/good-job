@@ -284,6 +284,11 @@ class TaskData
             $application = Arr::get($application, 'data');
 
             $taskNo = Arr::get($post, 'taskNo');
+            $exists = $this->_taskDao->findNumByTaskNo($appKey, $taskNo);
+
+            if ( ! empty($exists)) {
+                throw new \Exception('请勿重复提交！');
+            }
 
             $runtime = Arr::get($post, 'runtime');
             $runtime = ( ! empty($runtime)) ? strtotime($runtime) : time();

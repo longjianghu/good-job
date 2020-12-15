@@ -41,6 +41,24 @@ class TaskDao
     }
 
     /**
+     * 查询记录
+     *
+     * @access public
+     * @param string $appKey APP KEY
+     * @param string $taskNo 任务编号
+     * @return array
+     */
+    public function findNumByTaskNo(string $appKey, string $taskNo)
+    {
+        return Db::query(self::POOL)->from(self::TABLE)->where([
+                                                                   'is_deleted' => 0,
+                                                                   'app_key'    => $appKey,
+                                                                   'task_no'    => $taskNo,
+                                                                   'status'     => 0
+                                                               ])->count();
+    }
+
+    /**
      * 查询待执行的任务
      *
      * @access public
