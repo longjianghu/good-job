@@ -6,6 +6,7 @@ use App\Model\Dao\TaskDao;
 use App\Model\Dao\TaskLogDao;
 use App\Model\Dao\TaskAbortDao;
 
+use Swoft\Log\Helper\Log;
 use Swoft\Redis\Pool;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -103,7 +104,7 @@ class TaskLogic
                 $logs = [
                     'task_id'    => $taskId,
                     'retry'      => $retryNum,
-                    'remark'     => '任务执行成功!',
+                    'remark'     => 'success',
                     'created_at' => time()
                 ];
 
@@ -145,9 +146,11 @@ class TaskLogic
 
                     // 发送请求
                     $query = sendRequest($linkUrl, $data, $header, 'POST');
-                    $data  = (Arr::get($query, 'code') == 200) ? Arr::get($query, 'data') : 'API接口异常,数据请求失败!';
+                    $query = (Arr::get($query, 'code') == 200) ? Arr::get($query, 'data') : 'API接口异常,数据请求失败!';
 
-                    if (strtolower($data) != 'success') {
+                    $logs['remark'] = (is_string($query)) ? $query : json_encode($query);
+
+                    if (strtolower($query) != 'success') {
                         $logs['remark'] = (is_string($data)) ? $data : json_encode($data);
 
                         if ($retryNum < $retryTotal) {
@@ -185,6 +188,8 @@ class TaskLogic
                         throw new \Exception('任务状态更新失败!');
                     }
                 }
+
+                Log::info(sprintf('任务处理[%s]%s', $taskId, Arr::getValue($logs, 'remark')));
 
                 // 添加日志
                 $query = $this->_taskLogDao->create($logs);
@@ -228,6 +233,8 @@ class TaskLogic
             }
 
             foreach ($taskIds as $k => $v) {
+                Log::info(sprintf('投递任务[%s]成功', $v));
+
                 $this->_redis->lPush($this->_workerQueue, $v);
             }
 

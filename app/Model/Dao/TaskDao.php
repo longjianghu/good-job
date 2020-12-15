@@ -54,7 +54,7 @@ class TaskDao
             ['runtime', '<=', time()]
         ];
 
-        return Db::query(self::POOL)->from(self::TABLE)->where($where)->get();
+        return Db::query(self::POOL)->from(self::TABLE)->where($where)->orderBy('id', 'desc')->limit(100)->get();
     }
 
     /**

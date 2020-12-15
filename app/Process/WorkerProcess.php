@@ -5,18 +5,18 @@ namespace App\Process;
 use App\Model\Logic\TaskLogic;
 
 use Swoft\Co;
-use Swoft\Process\Process;
-use Swoft\Process\UserProcess;
-use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoole\Process\Pool;
+use Swoft\Process\Annotation\Mapping\Process;
+use Swoft\Process\Contract\ProcessInterface;
 use Swoft\Bean\Annotation\Mapping\Inject;
 
 /**
- * MonitorProcess
+ * WorkerProcess
  *
  * @since 2.0
- * @Bean()
+ * @Process()
  */
-class MonitorProcess extends UserProcess
+class WorkerProcess implements ProcessInterface
 {
     /**
      * @Inject()
@@ -25,9 +25,10 @@ class MonitorProcess extends UserProcess
     private $_taskLogic;
 
     /**
-     * @param Process $process
+     * @param Pool $pool
+     * @param int  $workerId
      */
-    public function run(Process $process): void
+    public function run(Pool $pool, int $workerId): void
     {
         while (true) {
             $this->_taskLogic->worker();

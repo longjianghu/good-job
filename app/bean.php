@@ -6,6 +6,7 @@ use Swoft\Db\Pool;
 use Swoft\Db\Database;
 use Swoft\Redis\RedisDb;
 use Swoft\Server\SwooleEvent;
+use Swoft\Process\ProcessPool;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Log\Handler\FileHandler;
 use Swoft\Task\Swoole\TaskListener;
@@ -26,10 +27,14 @@ return [
             SwooleEvent::FINISH => \bean(FinishListener::class)
         ],
         'setting'  => [
-            'worker_num'            => swoole_cpu_num(),
+            'reactor_num'           => config('app.maxWorkerNum'),
             'dispatch_mode'         => 3,
             'task_enable_coroutine' => true
         ]
+    ],
+    'processPool'        => [
+        'class'     => ProcessPool::class,
+        'workerNum' => config('app.minWorkerNum')
     ],
     'i18n'               => [
         'resoucePath'     => '@resource/language/',
@@ -88,7 +93,7 @@ return [
         'class'       => \Swoft\Redis\Pool::class,
         'redisDb'     => \bean('redis'),
         'minActive'   => 1,
-        'maxActive'   => 20,
+        'maxActive'   => config('app.maxWorkerNum'),
         'maxWait'     => 3,
         'maxWaitTime' => 3,
         'maxIdleTime' => 60,
@@ -116,8 +121,8 @@ return [
     'dbJobPool'          => [
         'class'       => Pool::class,
         'database'    => \bean('dbJob'),
-        'minActive'   => 5,
-        'maxActive'   => 10,
+        'minActive'   => 1,
+        'maxActive'   => config('app.maxWorkerNum'),
         'maxWait'     => 3,
         'maxWaitTime' => 3,
         'maxIdleTime' => 60,
