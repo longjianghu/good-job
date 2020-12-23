@@ -151,8 +151,6 @@ class TaskLogic
                     $logs['remark'] = (is_string($query)) ? $query : json_encode($query);
 
                     if (strtolower($query) != 'success') {
-                        $logs['remark'] = (is_string($data)) ? $data : json_encode($data);
-
                         if ($retryNum < $retryTotal) {
                             $retryNum += 1;
                             $remove   = false;
