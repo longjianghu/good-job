@@ -4,7 +4,6 @@ namespace App\Process;
 
 use App\Data\SendData;
 
-use Hyperf\Utils\Arr;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Process\AbstractProcess;
 use Psr\Container\ContainerInterface;
@@ -43,7 +42,7 @@ class WorkerProcess extends AbstractProcess
 
         while (true) {
             go(function () {
-                $this->_sendData->send();
+                $this->_sendData->worker();
             });
 
             usleep(100000);

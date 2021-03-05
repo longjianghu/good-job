@@ -20,7 +20,7 @@ use Hyperf\Config\Annotation\Value;
 class SendData
 {
     /**
-     * @Value("app.worketQueue")
+     * @Value("app.workerQueue")
      */
     private $_workerQueue;
 
@@ -57,6 +57,46 @@ class SendData
      * @var TaskLogModel
      */
     private $_taskLogModel;
+
+    /**
+     * 投递任务
+     *
+     * @access public
+     * @param string $queueName 队列名称
+     * @return array
+     */
+    public function monitor($queueName)
+    {
+        $status = ['code' => 0, 'data' => [], 'message' => ''];
+
+        try {
+            if (empty($queueName)) {
+                throw new \Exception('任务队列名称不能为空!');
+            }
+
+            $start = (string)0;
+            $end   = (string)time();
+
+            $taskIds = redis()->zRangeByScore($queueName, $start, $end);
+
+            if (empty($taskIds)) {
+                throw new \Exception('没有待执行的任务!');
+            }
+
+            foreach ($taskIds as $k => $v) {
+                redis()->lPush($this->_workerQueue, $v);
+            }
+
+            // 移除对应的任务
+            redis()->zRemRangeByScore($queueName, $start, $end);
+
+            $status = ['code' => 200, 'data' => [], 'message' => ''];
+        } catch (\Throwable $e) {
+            $status['message'] = $e->getMessage();
+        }
+
+        return $status;
+    }
 
     /**
      * 定时任务
@@ -121,12 +161,12 @@ class SendData
     }
 
     /**
-     * 任务执行Worker
+     * Worker
      *
      * @access public
      * @return array
      */
-    public function send()
+    public function worker()
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
@@ -247,46 +287,6 @@ class SendData
             if (empty($query)) {
                 throw new \Exception('日志添加失败!');
             }
-
-            $status = ['code' => 200, 'data' => [], 'message' => ''];
-        } catch (\Throwable $e) {
-            $status['message'] = $e->getMessage();
-        }
-
-        return $status;
-    }
-
-    /**
-     * 延迟/重试任务
-     *
-     * @access public
-     * @param string $queueName 队列名称
-     * @return array
-     */
-    public function watch($queueName)
-    {
-        $status = ['code' => 0, 'data' => [], 'message' => ''];
-
-        try {
-            if (empty($queueName)) {
-                throw new \Exception('任务队列名称不能为空!');
-            }
-
-            $start = (string)0;
-            $end   = (string)time();
-
-            $taskIds = redis()->zRangeByScore($queueName, $start, $end);
-
-            if (empty($taskIds)) {
-                throw new \Exception('没有待执行的任务!');
-            }
-
-            foreach ($taskIds as $k => $v) {
-                redis()->lPush($this->_workerQueue, $v);
-            }
-
-            // 移除对应的任务
-            redis()->zRemRangeByScore($queueName, $start, $end);
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];
         } catch (\Throwable $e) {
