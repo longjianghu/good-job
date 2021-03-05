@@ -11,7 +11,7 @@
  Target Server Version : 50551
  File Encoding         : 65001
 
- Date: 05/03/2021 08:30:28
+ Date: 05/03/2021 17:14:37
 */
 
 SET NAMES utf8mb4;
@@ -36,27 +36,27 @@ CREATE TABLE `application` (
   `updated_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `unq_app_key` (`app_key`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='工作任务';
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='工作任务';
 
 -- ----------------------------
 -- Table structure for task
 -- ----------------------------
 DROP TABLE IF EXISTS `task`;
 CREATE TABLE `task` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `id` bigint(20) unsigned NOT NULL COMMENT '主键ID',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除',
   `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '任务状态 0:待处理 1:处理中 2:已处理 3:已取消',
-  `app_key` char(32) NOT NULL DEFAULT '' COMMENT 'APP KEY',
-  `task_no` varchar(50) NOT NULL DEFAULT '' COMMENT '任务编号',
+  `app_key` char(32) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT 'APP KEY',
+  `task_no` varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '任务编号',
   `step` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '重试间隔(秒)',
   `runtime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '执行时间',
-  `content` longtext NOT NULL COMMENT '任务内容',
+  `content` longtext CHARACTER SET utf8 NOT NULL COMMENT '任务内容',
   `created_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_task_no` (`app_key`,`task_no`),
   KEY `idx_is_deleted` (`is_deleted`,`status`,`runtime`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='任务列表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='任务列表';
 
 -- ----------------------------
 -- Table structure for task_abort
@@ -71,22 +71,22 @@ CREATE TABLE `task_abort` (
   `updated_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_task_id` (`task_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='拦截记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='拦截记录';
 
 -- ----------------------------
 -- Table structure for task_log
 -- ----------------------------
 DROP TABLE IF EXISTS `task_log`;
 CREATE TABLE `task_log` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `id` bigint(20) unsigned NOT NULL COMMENT '主键ID',
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除',
   `task_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '任务ID',
   `retry` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '重试次数',
-  `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '备注信息',
+  `remark` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '备注信息',
   `created_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated_at` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_task_id` (`task_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统日志';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='系统日志';
 
 SET FOREIGN_KEY_CHECKS = 1;
