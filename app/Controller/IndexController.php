@@ -3,13 +3,10 @@
 namespace App\Controller;
 
 use App\Data\ApplicationData;
-use App\Middleware\AuthMiddleware;
 use App\Request\ApplicationRequest;
-
 
 use Hyperf\Utils\Arr;
 use Hyperf\Di\Annotation\Inject;
-use Hyperf\HttpServer\Annotation\Middleware;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use Hyperf\HttpServer\Contract\RequestInterface;
