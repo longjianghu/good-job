@@ -51,7 +51,7 @@ class IndexController extends AbstractController
      * @access public
      * @Middleware(AuthMiddleware::class)
      * @RequestMapping(path="/application",methods="post")
-     * @return mixed
+     * @return object
      */
     public function application(RequestInterface $request)
     {

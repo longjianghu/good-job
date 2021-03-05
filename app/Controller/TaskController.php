@@ -15,6 +15,7 @@ use Hyperf\HttpServer\Contract\RequestInterface;
 /**
  * Class IndexController
  *
+ * @Middleware(AuthMiddleware::class)
  * @package App\Controller
  */
 class TaskController extends AbstractController
@@ -35,9 +36,8 @@ class TaskController extends AbstractController
      * 任务拦截
      *
      * @access public
-     * @Middleware(AuthMiddleware::class)
      * @RequestMapping(path="abort",methods="post")
-     * @return mixed
+     * @return object
      */
     public function abort(RequestInterface $request)
     {
@@ -73,9 +73,8 @@ class TaskController extends AbstractController
      * 投递任务
      *
      * @access public
-     * @Middleware(AuthMiddleware::class)
      * @RequestMapping(path="create",methods="post")
-     * @return mixed
+     * @return object
      */
     public function create(RequestInterface $request)
     {
@@ -111,9 +110,8 @@ class TaskController extends AbstractController
      * 任务详情
      *
      * @access public
-     * @Middleware(AuthMiddleware::class)
      * @RequestMapping(path="detail",methods="post")
-     * @return mixed
+     * @return object
      */
     public function detail(RequestInterface $request)
     {
@@ -151,7 +149,7 @@ class TaskController extends AbstractController
      * @access public
      * @Middleware(AuthMiddleware::class)
      * @RequestMapping(path="retry",methods="post")
-     * @return mixed
+     * @return object
      */
     public function retry(RequestInterface $request)
     {
@@ -165,7 +163,8 @@ class TaskController extends AbstractController
             }
 
             $appKey = $request->getHeaderLine('app_key');
-            $result = $this->_taskData->retry($appKey, $request->post('taskId'));
+            $taskId = $request->post('taskId');
+            $result = $this->_taskData->retry($appKey, $taskId);
 
             if (Arr::get($result, 'code') != 200) {
                 throw new \Exception(Arr::get($result, 'message'));

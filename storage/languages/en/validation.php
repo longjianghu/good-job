@@ -174,5 +174,4 @@ return [
 
     'chinese_word' => 'The :attribute must contain valid characters(chinese/english character, number, underscore)',
     'sequential_array' => 'The :attribute must be sequential array',
-    'mobile' => ':attribute example:13800138000',
 ];

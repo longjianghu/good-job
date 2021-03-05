@@ -5,8 +5,8 @@ namespace App\Data;
 use App\Model\TaskModel;
 use App\Model\TaskLogModel;
 use App\Model\TaskAbortModel;
-
 use App\Service\ApplicationService;
+
 use Hyperf\Utils\Arr;
 use Hyperf\Utils\Str;
 use Hyperf\Di\Annotation\Inject;
@@ -126,7 +126,7 @@ class SendData
      * @access public
      * @return array
      */
-    public function worker()
+    public function send()
     {
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 

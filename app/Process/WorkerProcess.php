@@ -31,20 +31,19 @@ class WorkerProcess extends AbstractProcess
         $this->nums = config('app.workerNum', swoole_cpu_num());
     }
 
+    /**
+     * 执行任务
+     *
+     * @access public
+     * @return void
+     */
     public function handle(): void
     {
         console()->notice('=== 自定义进程启动 ===');
 
         while (true) {
             go(function () {
-                $result = $this->_sendData->worker();
-                $code   = Arr::get($result, 'code');
-
-                if ($code == 100) {
-                    logger('WorkerProcess')->info(Arr::get($result, 'message'));
-                } elseif ($code == 200) {
-                    logger('WorkerProcess')->info(sprintf('%s处理完成！', Arr::get($result, 'data.taskId')));
-                }
+                $this->_sendData->send();
             });
 
             usleep(100000);
