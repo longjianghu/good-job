@@ -83,7 +83,7 @@ class TaskController extends AbstractController
         $status = ['code' => 0, 'data' => [], 'message' => ''];
 
         try {
-            $validator = validator($this->_taskRequest);
+            $validator = validator($this->_taskRequest, 'taskNo,runtime,content');
 
             if ($validator->fails()) {
                 throw new \Exception($validator->errors()->first());

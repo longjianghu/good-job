@@ -181,7 +181,7 @@ class SendData
             $task   = redis()->hGet($this->_taskQueue, $taskId);
 
             if (empty($task)) {
-                throw new \Exception('任务信息获取失败!');
+                throw new \Exception(sprintf('[%s]任务信息获取失败!', $taskId));
             }
 
             $task = json_decode($task, true);
@@ -201,6 +201,7 @@ class SendData
             $retryTotal = (int)Arr::get($task, 'retryTotal');
 
             $logs = [
+                'id'         => snowflake()->generate(),
                 'task_id'    => $taskId,
                 'retry'      => $retryNum,
                 'remark'     => 'success',
@@ -277,15 +278,15 @@ class SendData
                 $query = $this->_taskModel->updateTaskStatus($taskId, 2);
 
                 if (empty($query)) {
-                    throw new \Exception('任务状态更新失败!');
+                    throw new \Exception(sprintf('[%s]任务状态更新失败!', $taskId));
                 }
             }
 
             // 添加日志
-            $query = $this->_taskLogModel->insertGetId($logs);
+            $query = $this->_taskLogModel->insertGet($logs);
 
             if (empty($query)) {
-                throw new \Exception('日志添加失败!');
+                throw new \Exception(sprintf('[%s]日志添加失败!', $taskId));
             }
 
             $status = ['code' => 200, 'data' => [], 'message' => ''];

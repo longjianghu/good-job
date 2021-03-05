@@ -180,7 +180,10 @@ class TaskData
             $appKey = Arr::get($application, 'app_key');
             $runing = ($runtime <= time()) ? 1 : 0;
 
+            $taskId = snowflake()->generate();
+
             $data = [
+                'id'         => $taskId,
                 'app_key'    => $appKey,
                 'task_no'    => $taskNo,
                 'status'     => $runing,
@@ -190,9 +193,9 @@ class TaskData
                 'created_at' => time()
             ];
 
-            $taskId = $this->_taskModel->insertGetId($data);
+            $query = $this->_taskModel->insert($data);
 
-            if (empty($taskId)) {
+            if (empty($query)) {
                 throw new \Exception('任务记录写入失败!');
             }
 
@@ -270,7 +273,7 @@ class TaskData
             $logs = $this->_taskLogModel->findAllByTaskId($taskId);
 
             $data = [
-                'taskId'    => Arr::get($result, 'task_id'),
+                'taskId'    => Arr::get($result, 'id'),
                 'taskNo'    => Arr::get($result, 'task_no'),
                 'status'    => Arr::get($result, 'status'),
                 'step'      => Arr::get($result, 'step'),

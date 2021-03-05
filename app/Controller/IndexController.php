@@ -52,7 +52,6 @@ class IndexController extends AbstractController
      * 创建应用
      *
      * @access public
-     * @Middleware(AuthMiddleware::class)
      * @RequestMapping(path="/application",methods="post")
      * @return object
      */

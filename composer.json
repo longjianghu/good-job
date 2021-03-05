@@ -27,6 +27,7 @@
         "hyperf/memory": "~2.1.0",
         "hyperf/process": "~2.1.0",
         "hyperf/redis": "~2.1.0",
+        "hyperf/snowflake": "^2.1",
         "hyperf/validation": "^2.1"
     },
     "require-dev": {

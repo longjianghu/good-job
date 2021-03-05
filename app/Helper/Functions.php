@@ -12,6 +12,7 @@ use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 use Hyperf\Validation\Request\FormRequest;
 use Hyperf\Logger\LoggerFactory;
 use Hyperf\Contract\StdoutLoggerInterface;
+use Hyperf\Contract\IdGeneratorInterface;
 
 /**
  * 控制台日志
@@ -204,6 +205,19 @@ if ( ! function_exists('sendMultiRequest')) {
         }
 
         return $status;
+    }
+}
+
+/**
+ * 雪花算法
+ *
+ * @access public
+ * @return IdGeneratorInterface|mixed
+ */
+if (function_exists('snowflake')) {
+    function snowflake()
+    {
+        return container()->get(IdGeneratorInterface::class);
     }
 }
 
