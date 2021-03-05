@@ -35,6 +35,11 @@ class SendData
     private $_retryQueue;
 
     /**
+     * @Value("app.retryTotal")
+     */
+    private $_retryTotal;
+
+    /**
      * @Inject()
      * @var ApplicationService
      */
@@ -143,7 +148,7 @@ class SendData
                 $delay = $runtime - time();
 
                 if ($delay > 0) { // 延迟任务
-                    redis()->zAdd($this->_delayQueue, [$taskId => $runtime]);
+                    redis()->zAdd($this->_delayQueue, [], $runtime, $taskId);
                 } else { // 立即执行
                     redis()->lPush($this->_workerQueue, $taskId);
                 }
@@ -266,7 +271,7 @@ class SendData
 
                         // 提交到重试队列
                         $step *= $retryNum;
-                        redis()->zAdd($this->_retryQueue, [$taskId => time() + $step]);
+                        redis()->zAdd($this->_retryQueue, [], time() + $step, $taskId);
                     }
                 }
             }
@@ -283,7 +288,7 @@ class SendData
             }
 
             // 添加日志
-            $query = $this->_taskLogModel->insertGet($logs);
+            $query = $this->_taskLogModel->insert($logs);
 
             if (empty($query)) {
                 throw new \Exception(sprintf('[%s]日志添加失败!', $taskId));

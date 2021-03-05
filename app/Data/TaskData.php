@@ -180,7 +180,7 @@ class TaskData
             $appKey = Arr::get($application, 'app_key');
             $runing = ($runtime <= time()) ? 1 : 0;
 
-            $taskId = snowflake()->generate();
+            $taskId = (string)snowflake()->generate();
 
             $data = [
                 'id'         => $taskId,
@@ -230,7 +230,7 @@ class TaskData
                 redis()->hSet($this->_taskQueue, $taskId, json_encode($data));
 
                 if ($delay > 0) { // 延迟任务
-                    redis()->zAdd($this->_delayQueue, [$taskId => $runtime]);
+                    redis()->zAdd($this->_delayQueue, [], $runtime, $taskId);
                 } else { // 立即执行
                     redis()->lPush($this->_workerQueue, $taskId);
                 }

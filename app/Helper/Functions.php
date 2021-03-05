@@ -5,14 +5,14 @@ use GuzzleHttp\Promise;
 
 use Hyperf\Utils\Arr;
 use Hyperf\Redis\RedisFactory;
+use Hyperf\Logger\LoggerFactory;
 use Hyperf\Utils\ApplicationContext;
+use Hyperf\Validation\Request\FormRequest;
+use Hyperf\Contract\StdoutLoggerInterface;
+use Hyperf\Snowflake\IdGeneratorInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
-use Hyperf\Validation\Request\FormRequest;
-use Hyperf\Logger\LoggerFactory;
-use Hyperf\Contract\StdoutLoggerInterface;
-use Hyperf\Contract\IdGeneratorInterface;
 
 /**
  * 控制台日志
@@ -214,7 +214,7 @@ if ( ! function_exists('sendMultiRequest')) {
  * @access public
  * @return IdGeneratorInterface|mixed
  */
-if (function_exists('snowflake')) {
+if ( ! function_exists('snowflake')) {
     function snowflake()
     {
         return container()->get(IdGeneratorInterface::class);
