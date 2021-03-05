@@ -1,29 +1,89 @@
-# 项目说明
+<p align="center">
+    <a href="https://github.com/longjianghu/good-job.git" target="_blank">
+        <img src="https://raw.githubusercontent.com/longjianghu/good-job/master/logo.png" alt="GoodJob">
+    </a>
+</p>
 
-系统直接发送短信、站内消息和邮件（包括延迟消息）。
+# GoodJob
 
-# 系统环境
+> ** 一款简易的任务管理系统 **
 
-需要PHP7.4+、MySQL和 Redis。
+系统通过调用接口方式执行任务(自带重试机制)，被调用方需要自已实现对应的业务逻辑。
 
-# 接口鉴权
+## 运行环境
 
-## 接口地址
+系统其于 <a href="https://www.hyperf.io/" target="_blank" title="Hyperf官网">Hyperf2.0</a> 开发,数据库采用 MySQL, 消息队列使用 Redis。
 
-`url`：http://www.api.com
+## 安装 Docker
 
-## 头部信息
+```
+curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
 
-> signature不参与签名
+usermod -aG docker  root
 
-| 参数名     | 类型     | 是否必填 | 默认值 | 说明      |
-|---------|--------|------|-----|---------|
-| app_key | string | 是    | -   | APP KEY |
-| nonce_str | string | 是    | -   | 随机字符串 |
-| timestamp | string | 是    | -   | 当前时间：2021-03-04 11:42:36 |
-| signature | string | 是    | -   | 签名信息 |
-| version | string | 是    | 1.0   | 版本号（固定值） |
+systemctl start docker
+```
 
-## 签名算法
+## 初始化数据库
 
-提交内容和头部信息按A-Z进行排序，组成签名字符串+分配的密码,然后使用MD5加密获取签名字符串。
+> 直接导入目录下的SQL文件创建相关数据表。
+
+## 使用镜像
+
+```
+TIPS:如果任务数过大,请开户进程池。docker exec -it good.job php /data/bin/swoft process:start -d
+```
+
+> 请根据你的实际路径进行调整
+
+```
+docker run --name good.job -p 8083:18306 -v /data/var/etc/good-job.cnf:/data/.env --restart=always -d longjianghu/good-job:latest
+```
+
+> 请使用 .env.example 生成本地的配置文件。
+
+## 自行部署
+
+首先克隆项目到本地
+
+```
+git pull https://github.com/longjianghu/good-job.git
+```
+
+step1:
+
+> /data/var/www/good-job 请根据你的实际路径进行调整。
+
+```
+docker run --rm -it -v /data/var/www/good-job:/data longjianghu/swoft:4.5.2 sh
+```
+
+setp2:
+
+```
+composer install
+```
+
+step3:
+
+```
+cp .env.example .env 
+
+vi .env // 请根据实际情况修改配置参数
+```
+
+step4:
+
+退出窗口并执行
+
+```
+docker run --name good.job -p 8083:18306 -v /data/var/www/good-job:/data --restart=always -d longjianghu/hyperf:2.0
+```
+
+## 应用接入
+
+点击这里查看[接口文档](API.md)
+
+## License
+
+GoodJob is an open-source software licensed under the [LICENSE](LICENSE)

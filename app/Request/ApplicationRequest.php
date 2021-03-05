@@ -29,8 +29,8 @@ class ApplicationRequest extends FormRequest
     {
         return [
             'appName'    => 'required',
-            'step'       => 'required|numeric|between:1,100',
-            'retryTotal' => 'required|numeric|between:1,100',
+            'step'       => 'nullable|numeric|between:1,3600',
+            'retryTotal' => 'nullable|numeric|between:1,10',
             'linkUrl'    => 'required|url',
             'remark'     => 'required',
         ];

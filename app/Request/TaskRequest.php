@@ -29,7 +29,7 @@ class TaskRequest extends FormRequest
             'taskId'  => 'required',
             'taskNo'  => 'required',
             'runtime' => 'nullable|date',
-            'content' => 'required',
+            'content' => 'required|json',
         ];
     }
 

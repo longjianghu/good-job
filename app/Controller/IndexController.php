@@ -6,15 +6,18 @@ use App\Data\ApplicationData;
 use App\Middleware\AuthMiddleware;
 use App\Request\ApplicationRequest;
 
+
 use Hyperf\Utils\Arr;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use Hyperf\HttpServer\Contract\RequestInterface;
 
 /**
  * Class IndexController
  *
+ * @Controller()
  * @package App\Controller
  */
 class IndexController extends AbstractController
@@ -32,7 +35,7 @@ class IndexController extends AbstractController
     private $_applicationRequest;
 
     /**
-     * 发送短信
+     * 默认首页
      *
      * @access
      * @RequestMapping(path="",methods="get")
