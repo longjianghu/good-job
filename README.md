@@ -55,7 +55,7 @@ step1:
 > /data/var/www/good-job 请根据你的实际路径进行调整。
 
 ```
-docker run --rm -it -v /data/var/www/good-job:/data longjianghu/swoft:4.5.2 sh
+docker run --rm -it -v /data/var/www/good-job:/data longjianghu/hyperf:2.0 sh
 ```
 
 setp2:
