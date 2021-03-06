@@ -31,7 +31,7 @@ systemctl start docker
 ## 使用镜像
 
 ```
-TIPS:如果任务数过大,请开户进程池。docker exec -it good.job php /data/bin/swoft process:start -d
+TIPS:如果任务数过大,请调整WORKER_NUM数值
 ```
 
 > 请根据你的实际路径进行调整
